@@ -40,8 +40,6 @@ class _ProductMainState extends State<ProductMain> {
                   child: ListTile(
                     title: Text(productData['product_name'] ?? ''),
                     subtitle: Text(productData['description'] ?? ''),
-                    // Add more fields as needed
-
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
