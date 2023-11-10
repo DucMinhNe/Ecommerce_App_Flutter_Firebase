@@ -53,21 +53,24 @@ class _AdminMainState extends State<AdminMain> {
                   children: [
                     Expanded(
                       child: Card(
-                        color: Colors.blue, // Màu cho Card 1
-                        child: GestureDetector(
+                        elevation: 4,
+                        color: Colors.blue,
+                        child: InkWell(
                           onTap: () {
-                            // Handle tap for Card 1
-                            print('Card 1 tapped');
+                            Navigator.of(context).pushNamed('customerMain');
                           },
                           child: Container(
-                            height: 100, // Đặt chiều cao mong muốn
-                            child: Center(
-                              child: ListTile(
-                                title: Text(
-                                  'Người Dùng',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white), // Màu cho văn bản
+                            height: 100,
+                            child: ListTile(
+                              leading: Icon(Icons.person,
+                                  color: Colors.white), // Hình ảnh người dùng
+                              title: Text(
+                                'Người Dùng',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
@@ -75,23 +78,27 @@ class _AdminMainState extends State<AdminMain> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 16), // Khoảng cách giữa các thẻ
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Card(
-                        color: Colors.green, // Màu cho Card 2
-                        child: GestureDetector(
+                        elevation: 4,
+                        color: Colors.green,
+                        child: InkWell(
                           onTap: () {
-                            Navigator.of(context).pushNamed('ProductMain');
+                            Navigator.of(context).pushNamed('productMain');
                           },
                           child: Container(
-                            height: 100, // Đặt chiều cao mong muốn
-                            child: Center(
-                              child: ListTile(
-                                title: Text(
-                                  'Sản Phẩm',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white), // Màu cho văn bản
+                            height: 100,
+                            child: ListTile(
+                              leading: Icon(Icons.shopping_cart,
+                                  color: Colors.white), // Hình ảnh giỏ hàng
+                              title: Text(
+                                'Sản Phẩm',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
@@ -105,21 +112,24 @@ class _AdminMainState extends State<AdminMain> {
                   children: [
                     Expanded(
                       child: Card(
-                        color: Colors.green, // Màu cho Card 1
-                        child: GestureDetector(
+                        elevation: 4,
+                        color: Colors.green,
+                        child: InkWell(
                           onTap: () {
-                            // Handle tap for Card 1
-                            print('Card 1 tapped');
+                            Navigator.of(context).pushNamed('employeeMain');
                           },
                           child: Container(
-                            height: 100, // Đặt chiều cao mong muốn
-                            child: Center(
-                              child: ListTile(
-                                title: Text(
-                                  'Nhân Viên',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white), // Màu cho văn bản
+                            height: 100,
+                            child: ListTile(
+                              leading: Icon(Icons.work,
+                                  color: Colors.white), // Hình ảnh nhân viên
+                              title: Text(
+                                'Nhân Viên',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
@@ -127,24 +137,27 @@ class _AdminMainState extends State<AdminMain> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 16), // Khoảng cách giữa các thẻ
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Card(
-                        color: Colors.blue, // Màu cho Card 2
-                        child: GestureDetector(
+                        elevation: 4,
+                        color: Colors.blue,
+                        child: InkWell(
                           onTap: () {
-                            // Handle tap for Card 2
-                            print('Card 2 tapped');
+                            print('Đơn đặt hàng');
                           },
                           child: Container(
-                            height: 100, // Đặt chiều cao mong muốn
-                            child: Center(
-                              child: ListTile(
-                                title: Text(
-                                  'Đơn đặt hàng',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white), // Màu cho văn bản
+                            height: 100,
+                            child: ListTile(
+                              leading: Icon(Icons.assignment,
+                                  color: Colors.white), // Hình ảnh đơn hàng
+                              title: Text(
+                                'Đơn đặt hàng',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),

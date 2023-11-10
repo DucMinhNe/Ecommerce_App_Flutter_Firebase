@@ -1,50 +1,44 @@
-import 'package:ecommerce_app_firebase/views/admin/product/product_firestore.dart';
+import 'package:ecommerce_app_firebase/views/admin/employee/employee_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ProductMain extends StatefulWidget {
+class EmployeeMain extends StatefulWidget {
   @override
-  _ProductMainState createState() => _ProductMainState();
+  _EmployeeMainState createState() => _EmployeeMainState();
 }
 
-class _ProductMainState extends State<ProductMain> {
-  ProductFsMethods productFsMethods = ProductFsMethods();
+class _EmployeeMainState extends State<EmployeeMain> {
+  EmployeeFsMethods employeeFsMethods = EmployeeFsMethods();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    productFsMethods.getAllProducts();
+    employeeFsMethods.getAllEmployees();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Product List'),
+        title: Text('Employee List'),
       ),
       body: FutureBuilder<QuerySnapshot>(
-        future: productFsMethods.getAllProducts(),
+        future: employeeFsMethods.getAllEmployees(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error fetching products'));
+            return Center(child: Text('Error fetching employees'));
           } else {
-            // Extract the list of products from the snapshot
-            List<QueryDocumentSnapshot> products = snapshot.data!.docs;
+            List<QueryDocumentSnapshot> employees = snapshot.data!.docs;
 
-            // Build the ListView with cards
-            // ...
             return ListView.builder(
-              itemCount: products.length,
+              itemCount: employees.length,
               itemBuilder: (context, index) {
-                // Get product data from the document
-                Map<String, dynamic> productData =
-                    products[index].data() as Map<String, dynamic>;
+                Map<String, dynamic> employeeData =
+                    employees[index].data() as Map<String, dynamic>;
+                String employeeId = employees[index].id;
 
-                // Get the document ID
-                String productId = products[index].id;
-
-                // Create a Card for each product
                 return GestureDetector(
                   onTap: () {
                     showDialog(
@@ -52,51 +46,80 @@ class _ProductMainState extends State<ProductMain> {
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: Text(
-                            productData['product_name'] ?? '',
+                            '${employeeData['first_name']} ${employeeData['last_name']}' ??
+                                '',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 18, // Kích thước văn bản
-                              color: Colors.blue, // Màu cho văn bản
+                              fontSize: 18,
+                              color: Colors.blue,
                             ),
                           ),
-                          content: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Image.network(productData['product_image'] ?? ''),
-                              SizedBox(height: 8),
-                              Text(
-                                'Description: ${productData['description'] ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 16, // Kích thước văn bản
+                          content: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.network(
+                                    employeeData['employee_image'] ?? ''),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Email: ${employeeData['email'] ?? ''}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'Unit Price: ${productData['unit_price'] ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 16, // Kích thước văn bản
+                                Text(
+                                  'Address: ${employeeData['address'] ?? ''}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'Stock Quantity: ${productData['stock_quantity'] ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 16, // Kích thước văn bản
+                                Text(
+                                  'Phone Number: ${employeeData['phone_number'] ?? ''}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'Product Category Name: ${productData['product_category_name'] ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 16, // Kích thước văn bản
+                                Text(
+                                  'Job Title: ${employeeData['job_title_name'] ?? ''}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'Provider Name: ${productData['provider_name'] ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 16, // Kích thước văn bản
+                                Text(
+                                  'Birth Date: ${employeeData['birth_date'] ?? ''}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              ),
-                              // Thêm các thông tin khác cần hiển thị
-                            ],
+                                Text(
+                                  'Gender: ${employeeData['gender'] ?? ''}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Text(
+                                  'Hire Date: ${employeeData['hire_date'] ?? ''}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Text(
+                                  'Salary: ${employeeData['salary'] ?? ''}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Text(
+                                  'Password: ${employeeData['password'] ?? ''}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+
+                                // Add other necessary information
+                              ],
+                            ),
                           ),
                           actions: [
                             TextButton(
@@ -106,8 +129,8 @@ class _ProductMainState extends State<ProductMain> {
                               child: Text(
                                 'Close',
                                 style: TextStyle(
-                                  color: Colors.red, // Màu cho văn bản nút
-                                  fontSize: 18, // Kích thước văn bản
+                                  color: Colors.red,
+                                  fontSize: 18,
                                 ),
                               ),
                             ),
@@ -125,27 +148,28 @@ class _ProductMainState extends State<ProductMain> {
                     child: ListTile(
                       contentPadding: EdgeInsets.all(8),
                       leading: Container(
-                        width: 60, // Độ rộng mong muốn của hình chữ nhật
-                        height: 70, // Độ cao mong muốn của hình chữ nhật
+                        width: 60,
+                        height: 70,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(7),
                           image: DecorationImage(
                             image: NetworkImage(
-                                productData['product_image'] ?? ''),
+                                employeeData['employee_image'] ?? ''),
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
                       title: Text(
-                        productData['product_name'] ?? '',
+                        '${employeeData['first_name']} ${employeeData['last_name']}' ??
+                            '',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(productData['description'] ?? ''),
+                          Text(employeeData['email'] ?? ''),
                           Text(
-                            '$productId',
+                            '$employeeId',
                             style: TextStyle(color: Colors.grey),
                           ),
                         ],
@@ -157,10 +181,10 @@ class _ProductMainState extends State<ProductMain> {
                             icon: Icon(Icons.edit),
                             onPressed: () {
                               Navigator.of(context).pushNamed(
-                                'productEdit',
+                                'employeeEdit',
                                 arguments: {
-                                  'productId': productId,
-                                  'productData': productData,
+                                  'employeeId': employeeId,
+                                  'employeeData': employeeData,
                                 },
                               );
                             },
@@ -174,7 +198,7 @@ class _ProductMainState extends State<ProductMain> {
                                   return AlertDialog(
                                     title: Text('Confirm Delete'),
                                     content: Text(
-                                      'Are you sure you want to delete this product?',
+                                      'Are you sure you want to delete this employee?',
                                     ),
                                     actions: [
                                       TextButton(
@@ -186,15 +210,16 @@ class _ProductMainState extends State<ProductMain> {
                                       TextButton(
                                         onPressed: () async {
                                           try {
-                                            await ProductFsMethods()
-                                                .deleteProduct(productId);
+                                            await EmployeeFsMethods()
+                                                .deleteEmployee(employeeId);
                                             setState(() {
-                                              // Refresh the products after deletion
-                                              productFsMethods.getAllProducts();
+                                              employeeFsMethods
+                                                  .getAllEmployees();
                                             });
                                             Navigator.of(context).pop();
                                           } catch (e) {
-                                            print("Error deleting product: $e");
+                                            print(
+                                                "Error deleting employee: $e");
                                           }
                                         },
                                         child: Text('Delete'),
@@ -212,14 +237,13 @@ class _ProductMainState extends State<ProductMain> {
                 );
               },
             );
-//
           }
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {});
-          Navigator.of(context).pushNamed('productCreate');
+          Navigator.of(context).pushNamed('employeeCreate');
         },
         child: Icon(Icons.add),
       ),

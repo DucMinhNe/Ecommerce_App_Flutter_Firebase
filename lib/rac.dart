@@ -136,3 +136,6 @@
   //       .doc(id)
   //       .delete();
   // }
+
+      // await CustomerFsMethods()
+      //       .addCustomerWithAddress(uploadData, uploadData);

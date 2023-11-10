@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DatabaseMethods {
-  Future addProducts(Map<String, dynamic> userInfoMap) async {
+class ProductFsMethods {
+  Future addProducts(Map<String, dynamic> productInfoMap) async {
     return await FirebaseFirestore.instance
         .collection("Product")
         .doc()
-        .set(userInfoMap);
+        .set(productInfoMap);
   }
 
   Future<QuerySnapshot> getAllProducts() {
@@ -46,5 +46,21 @@ class DatabaseMethods {
       print("Error deleting product: $e");
       throw e; // Throw the error for handling in the calling code
     }
+  }
+
+  Future<QuerySnapshot> searchProductByName(String productName) {
+    return FirebaseFirestore.instance
+        .collection('Product')
+        .where('product_name', isEqualTo: productName)
+        .get()
+        .then(
+      (value) {
+        return value;
+      },
+      onError: (error) {
+        print("Error searching for products: $error");
+        throw error; // Đẩy ngoại lệ lại sau khi xử lý
+      },
+    );
   }
 }

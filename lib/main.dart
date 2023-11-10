@@ -1,7 +1,14 @@
 import 'package:ecommerce_app_firebase/controller/provider/cart_provider.dart';
 import 'package:ecommerce_app_firebase/models/getx/theme_getx_model.dart';
 import 'package:ecommerce_app_firebase/views/admin/admin_main.dart';
+import 'package:ecommerce_app_firebase/views/admin/customer/customer_create.dart';
+import 'package:ecommerce_app_firebase/views/admin/customer/customer_edit.dart';
+import 'package:ecommerce_app_firebase/views/admin/customer/customer_main.dart';
+import 'package:ecommerce_app_firebase/views/admin/employee/employee_create.dart';
+import 'package:ecommerce_app_firebase/views/admin/employee/employee_edit.dart';
+import 'package:ecommerce_app_firebase/views/admin/employee/employee_main.dart';
 import 'package:ecommerce_app_firebase/views/admin/product/product_create.dart';
+import 'package:ecommerce_app_firebase/views/admin/product/product_edit.dart';
 import 'package:ecommerce_app_firebase/views/admin/product/product_main.dart';
 import 'package:ecommerce_app_firebase/views/screens/cart_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/detail_page.dart';
@@ -60,7 +67,56 @@ class _myAppState extends State<myApp> {
             'adminMain': (context) => AdminMain(),
             //Product
             'productCreate': (context) => ProductCreate(),
-            'ProductMain': (context) => ProductMain(),
+            'productEdit': (context) {
+              // Nhận đối tượng arguments từ đường dẫn
+              final arguments = ModalRoute.of(context)?.settings.arguments
+                  as Map<String, dynamic>;
+
+              // Lấy productId từ đối tượng arguments
+              final productId = arguments?['productId'] ?? '';
+
+              // Truyền productId và productData cho trang ProductEdit
+              return ProductEdit(
+                productId: productId,
+                productData: arguments?['productData'] ?? {},
+              );
+            },
+            'productMain': (context) => ProductMain(),
+            //Employee
+            'employeeCreate': (context) => EmployeeCreate(),
+            'employeeEdit': (context) {
+              // Nhận đối tượng arguments từ đường dẫn
+              final arguments = ModalRoute.of(context)?.settings.arguments
+                  as Map<String, dynamic>;
+
+              // Lấy employeeId từ đối tượng arguments
+              final employeeId = arguments?['employeeId'] ?? '';
+
+              // Truyền employeeId và employeeData cho trang EmployeeEdit
+              return EmployeeEdit(
+                employeeId: employeeId,
+                employeeData: arguments?['employeeData'] ?? {},
+              );
+            },
+            'employeeMain': (context) => EmployeeMain(),
+
+            //Customer   customer
+            'customerCreate': (context) => CustomerCreate(),
+            'customerEdit': (context) {
+              // Nhận đối tượng arguments từ đường dẫn
+              final arguments = ModalRoute.of(context)?.settings.arguments
+                  as Map<String, dynamic>;
+
+              // Lấy customerId từ đối tượng arguments
+              final customerId = arguments?['customerId'] ?? '';
+
+              // Truyền customerId và customerData cho trang CustomerEdit
+              return CustomerEdit(
+                customerId: customerId,
+                customerData: arguments?['customerData'] ?? {},
+              );
+            },
+            'customerMain': (context) => CustomerMain(),
           },
         );
       },
