@@ -10,15 +10,15 @@ import 'package:ecommerce_app_firebase/views/admin/employee/employee_main.dart';
 import 'package:ecommerce_app_firebase/views/admin/product/product_create.dart';
 import 'package:ecommerce_app_firebase/views/admin/product/product_edit.dart';
 import 'package:ecommerce_app_firebase/views/admin/product/product_main.dart';
-// import 'package:ecommerce_app_firebase/views/screens/cart_screen.dart';
-import 'package:ecommerce_app_firebase/views/screens/cart_screen_mod.dart';
+import 'package:ecommerce_app_firebase/views/screens/cart_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/detail_page.dart';
 import 'package:ecommerce_app_firebase/views/screens/favourite_list_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/home_page.dart';
 import 'package:ecommerce_app_firebase/views/screens/intro_screen.dart';
-import 'package:ecommerce_app_firebase/views/screens/log_in_screen.dart';
+
 import 'package:ecommerce_app_firebase/views/screens/log_sign_page.dart';
-import 'package:ecommerce_app_firebase/views/screens/sign_in_screen.dart';
+import 'package:ecommerce_app_firebase/views/screens/sign_in_screen_mod.dart';
+import 'package:ecommerce_app_firebase/views/screens/sign_up_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/splash_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/view_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -57,7 +57,7 @@ class _myAppState extends State<myApp> {
             'introScreen': (context) => IntroScreen(),
             'logSignPage': (context) => LogSignPage(),
             'signInScreen': (context) => SignInScreen(),
-            'logInScreen': (context) => LogInScreen(),
+            'signUpScreen': (context) => SignUpScreen(),
             'homePage': (context) => HomePage(),
             'viewScreen': (context) => ViewScreen(),
             // 'DetailPage': (context) => DetailPage(),

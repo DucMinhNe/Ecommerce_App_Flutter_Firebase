@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +10,12 @@ import 'package:image_picker_ios/image_picker_ios.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../models/resources.dart';
+=======
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecommerce_app_firebase/controller/helper_classes/firebase_auth_helper.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+>>>>>>> main
 
 class drawerComponent extends StatefulWidget {
   const drawerComponent({Key? key}) : super(key: key);
@@ -18,6 +25,7 @@ class drawerComponent extends StatefulWidget {
 }
 
 class _drawerComponentState extends State<drawerComponent> {
+<<<<<<< HEAD
   @override
   Widget build(BuildContext context) {
     print(person!.displayName);
@@ -57,6 +65,24 @@ class _drawerComponentState extends State<drawerComponent> {
       FireBaseStoreHelper.fireBaseStoreHelper.imageInsert(data: tempp);
     }
 
+=======
+  String _userUID = '';
+  @override
+  void initState() {
+    _loadUserUID();
+    super.initState();
+  }
+
+  Future<void> _loadUserUID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userUID = prefs.getString('userUID') ?? '';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+>>>>>>> main
     ;
     return Drawer(
       child: Builder(builder: (context) {
@@ -76,6 +102,7 @@ class _drawerComponentState extends State<drawerComponent> {
                         height: 60,
                       ),
                       StreamBuilder(
+<<<<<<< HEAD
                         stream: FireBaseStoreHelper.db
                             .collection("customer")
                             .snapshots(),
@@ -126,6 +153,49 @@ class _drawerComponentState extends State<drawerComponent> {
                             fontWeight: FontWeight.bold,
                             color: Colors.white70),
                       ),
+=======
+                        stream: FirebaseFirestore.instance
+                            .collection("Customer")
+                            .doc(_userUID)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return CircularProgressIndicator(); // or any other loading widget
+                          }
+                          if (snapshot.hasData && snapshot.data != null) {
+                            var userData = snapshot.data;
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CircleAvatar(
+                                    // ... Your avatar setup
+                                    ),
+                                Text(
+                                  userData?['first_name'] +
+                                      ' ' +
+                                      userData?['last_name'],
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                                Text(
+                                  userData?['email'],
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                                // Display other user info as needed
+                              ],
+                            );
+                          }
+                          return Text('No user data');
+                        },
+                      ),
+>>>>>>> main
                     ],
                   ),
                 ),

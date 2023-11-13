@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+<<<<<<< HEAD
 import 'package:ecommerce_app_firebase/controller/provider/cart_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,11 @@ import 'package:provider/provider.dart';
 
 import '../../controller/helper_classes/firebase_firestore_helper.dart';
 import '../../models/product_model.dart';
+=======
+
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+>>>>>>> main
 
 class DetailPage extends StatefulWidget {
   final String productId;
@@ -206,6 +212,7 @@ class _DetailPageState extends State<DetailPage> {
                             ),
                           ),
                           onPressed: () {
+<<<<<<< HEAD
                             FirebaseFirestore.instance
                                 .collection('Cart')
                                 .add({
@@ -217,6 +224,22 @@ class _DetailPageState extends State<DetailPage> {
                                 })
                                 .then((value) {})
                                 .catchError((error) {});
+=======
+                            FirebaseFirestore.instance.collection('Cart').add({
+                              'customerRef': 'JZlP4lYxRfas7yymAmpP',
+                              'productRef': widget.productId,
+                              'quantity': 1,
+                              'price':
+                                  int.parse(widget.productData['unit_price']),
+                            }).then((value) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text('Đã thêm vào giỏ hàng thành công'),
+                                ),
+                              );
+                            }).catchError((error) {});
+>>>>>>> main
                           },
                           child: Container(
                             alignment: Alignment.center,

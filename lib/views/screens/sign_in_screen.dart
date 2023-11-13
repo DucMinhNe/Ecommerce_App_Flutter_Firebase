@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 
+=======
+import 'package:shared_preferences/shared_preferences.dart';
+>>>>>>> main
 import '../../controller/helper_classes/firebase_auth_helper.dart';
 import '../../models/resources.dart';
 
@@ -19,6 +23,7 @@ class _SignInScreenState extends State<SignInScreen> {
         automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Colors.blue.shade200,
+<<<<<<< HEAD
         // leading: GestureDetector(
         //   onTap: () {
         //     Navigator.pop(context);
@@ -28,6 +33,17 @@ class _SignInScreenState extends State<SignInScreen> {
         //     size: 20,
         //   ),
         // ),
+=======
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: const Icon(
+            Icons.arrow_back_ios_rounded,
+            size: 20,
+          ),
+        ),
+>>>>>>> main
       ),
       body: Container(
         color: Colors.blue.shade200,
