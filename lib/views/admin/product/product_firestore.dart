@@ -47,20 +47,4 @@ class ProductFsMethods {
       throw e; // Throw the error for handling in the calling code
     }
   }
-
-  Future<QuerySnapshot> searchProductByName(String productName) {
-    return FirebaseFirestore.instance
-        .collection('Product')
-        .where('product_name', isEqualTo: productName)
-        .get()
-        .then(
-      (value) {
-        return value;
-      },
-      onError: (error) {
-        print("Error searching for products: $error");
-        throw error; // Đẩy ngoại lệ lại sau khi xử lý
-      },
-    );
-  }
 }

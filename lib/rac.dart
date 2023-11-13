@@ -139,3 +139,57 @@
 
       // await CustomerFsMethods()
       //       .addCustomerWithAddress(uploadData, uploadData);
+
+
+
+      // Replace the section with real product data from Firestore
+
+// Expanded(
+//   flex: 8,
+//   child: Column(
+//     children: [
+//       Padding(
+//         padding: const EdgeInsets.only(left: 35.0, right: 30),
+//         child: Row(
+//           children: [
+//             Text(
+//               'Đang Phổ Biến',
+//               style: TextStyle(
+//                 fontSize: 23,
+//                 fontWeight: FontWeight.w800,
+//                 color: (Get.isDarkMode)
+//                     ? Colors.white
+//                     : Colors.grey.shade900,
+//               ),
+//             ),
+//             const Spacer(),
+//             GestureDetector(
+//               onTap: () {
+//                 Navigator.of(context).pushNamed('viewScreen');
+//               },
+//               child: Text(
+//                 'Xem Tất Cả ▶️',
+//                 style: TextStyle(
+//                   fontSize: 14,
+//                   color: Colors.amber.shade500,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//       SingleChildScrollView(
+//         scrollDirection: Axis.horizontal,
+//         child: GetBuilder<CategoryControllerGetx>(
+//           builder: (categoryController) {
+//             // Replace this part with data retrieved from Firestore
+//             return Row(
+//               children: /* Use the data retrieved from Firestore */ [],
+//             );
+//           },
+//         ),
+//       ),
+//     ],
+//   ),
+// ),

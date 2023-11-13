@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -17,6 +18,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int i = 0;
+  String selectedCategory = '';
+
   CategoryControllerGetx categoryControllerGetx =
       Get.put(CategoryControllerGetx());
 
@@ -168,251 +171,242 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  Hero(
-                    tag: 'category',
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: category
-                            .map(
-                              (e) => GetBuilder<CategoryControllerGetx>(
-                                  builder: (categoryController) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 10,
-                                    top: 10,
-                                    bottom: 10,
-                                  ),
-                                  child: ElevatedButton(
-                                    style: ButtonStyle(
-                                      elevation: MaterialStateProperty.all(
-                                          (categoryController
-                                                      .categoryModelGetx.i ==
-                                                  category.indexOf(e))
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('Product')
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // or a loading indicator
+                      }
+                      List<DocumentSnapshot> categories = snapshot.data!.docs;
+
+                      return Hero(
+                        tag: 'category',
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children:
+                                categories.map((DocumentSnapshot category) {
+                              final categoryData =
+                                  category.data() as Map<String, dynamic>;
+
+                              return GetBuilder<CategoryControllerGetx>(
+                                builder: (categoryController) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 10,
+                                      top: 10,
+                                      bottom: 10,
+                                    ),
+                                    child: ElevatedButton(
+                                      style: ButtonStyle(
+                                        elevation: MaterialStateProperty.all(
+                                          (selectedCategory ==
+                                                  categoryData[
+                                                      'product_category_name'])
                                               ? 6
-                                              : 0),
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                        (categoryController
-                                                    .categoryModelGetx.i ==
-                                                category.indexOf(e))
-                                            ? const Color.fromARGB(
-                                                255, 54, 162, 244)
-                                            : (Get.isDarkMode)
-                                                ? Colors.grey.shade700
-                                                : Colors.grey.shade200,
+                                              : 0,
+                                        ),
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                          (selectedCategory ==
+                                                  categoryData[
+                                                      'product_category_name'])
+                                              ? const Color.fromARGB(
+                                                  255, 54, 162, 244)
+                                              : (Get.isDarkMode)
+                                                  ? Colors.grey.shade700
+                                                  : Colors.grey.shade200,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          selectedCategory = categoryData[
+                                              'product_category_name'];
+                                        });
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(13.0),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              categoryData[
+                                                  'product_category_name'],
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                                color: (categoryController
+                                                            .categoryModelGetx
+                                                            .i ==
+                                                        categories
+                                                            .indexOf(category))
+                                                    ? Colors.white
+                                                    : (Get.isDarkMode)
+                                                        ? Colors.white
+                                                        : Colors.grey.shade800,
+                                              ),
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                    onPressed: () {
-                                      categoryController.changeCategory(
-                                        temp: category.indexOf(e),
-                                      );
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(13.0),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            e['name'],
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
-                                              color: (categoryController
-                                                          .categoryModelGetx
-                                                          .i ==
-                                                      category.indexOf(e))
-                                                  ? Colors.white
-                                                  : (Get.isDarkMode)
-                                                      ? Colors.white
-                                                      : Colors.grey.shade800,
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }),
-                            )
-                            .toList(),
-                      ),
-                    ),
+                                  );
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
             ),
             Expanded(
               flex: 8,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 35.0, right: 30),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Đang Phổ Biến',
-                          style: TextStyle(
-                            fontSize: 23,
-                            fontWeight: FontWeight.w800,
-                            color: (Get.isDarkMode)
-                                ? Colors.white
-                                : Colors.grey.shade900,
-                          ),
-                        ),
-                        const Spacer(),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pushNamed('viewScreen');
-                          },
-                          child: Text(
-                            'Xem Tất Cả ▶️',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.amber.shade500,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SingleChildScrollView(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('Product')
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator(); // or a loading indicator
+                  }
+
+                  List<DocumentSnapshot> products = snapshot.data!.docs;
+
+                  return SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: GetBuilder<CategoryControllerGetx>(
-                        builder: (categoryController) {
-                      return Row(
-                        children: AllProducts.map((e) {
-                          int id = categoryController.categoryModelGetx.i + 1;
-                          return (e.id == id)
-                              ? Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 20, left: 25, bottom: 20),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.of(context).pushNamed(
-                                          'DetailPage',
-                                          arguments: e);
-                                    },
-                                    child: Container(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.3,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.5,
-                                      decoration: BoxDecoration(
+                    child: Row(
+                      children: products.map((DocumentSnapshot product) {
+                        final data = product.data() as Map<String, dynamic>;
+                        final productId = product.reference.id;
+                        return (data['product_category_name'] ==
+                                selectedCategory)
+                            ? Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 20, left: 25, bottom: 20),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pushNamed(
+                                      'DetailPage',
+                                      arguments: {
+                                        'productId': productId,
+                                        'productData': data,
+                                      },
+                                    );
+                                  },
+                                  child: Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.3,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    decoration: BoxDecoration(
+                                      color: (Get.isDarkMode)
+                                          ? Colors.grey.shade700
+                                          : Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
                                           color: (Get.isDarkMode)
-                                              ? Colors.grey.shade700
-                                              : Colors.white,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: (Get.isDarkMode)
-                                                  ? Colors.grey.shade900
-                                                  : Colors.grey.shade200,
-                                              offset: const Offset(1, 2),
-                                              blurRadius: 20,
-                                            ),
-                                          ],
-                                          borderRadius:
-                                              BorderRadius.circular(40)),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
+                                              ? Colors.grey.shade900
+                                              : Colors.grey.shade200,
+                                          offset: const Offset(1, 2),
+                                          blurRadius: 20,
+                                        ),
+                                      ],
+                                      borderRadius: BorderRadius.circular(40),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        const SizedBox(height: 10),
+                                        SizedBox(
+                                          height: 120,
+                                          width: 200,
+                                          child: Hero(
+                                            tag: data['product_name'],
+                                            child: Image.network(
+                                                data['product_image']),
                                           ),
-                                          SizedBox(
-                                            height: 120,
-                                            width: 200,
-                                            child: Hero(
-                                              tag: e.name,
-                                              child: Image.asset(
-                                                e.image,
-                                                semanticLabel: e.name,
-                                              ),
-                                            ),
+                                        ),
+                                        const SizedBox(height: 15),
+                                        Text(
+                                          // uid,
+                                          data['product_name'],
+                                          style: TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w800,
+                                            color: (Get.isDarkMode)
+                                                ? Colors.white
+                                                : Colors.grey.shade700,
                                           ),
-                                          const SizedBox(
-                                            height: 15,
+                                        ),
+                                        const SizedBox(height: 0),
+                                        Text(
+                                          data['product_category_name'],
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: (Get.isDarkMode)
+                                                ? Colors.white
+                                                : Colors.grey.shade500,
                                           ),
-                                          Text(
-                                            e.name,
-                                            style: TextStyle(
-                                              fontSize: 22,
-                                              fontWeight: FontWeight.w800,
-                                              color: (Get.isDarkMode)
-                                                  ? Colors.white
-                                                  : Colors.grey.shade700,
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 0,
-                                          ),
-                                          Text(
-                                            e.category,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                              color: (Get.isDarkMode)
-                                                  ? Colors.white
-                                                  : Colors.grey.shade500,
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 0,
-                                          ),
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomCenter,
-                                                child: Text(
-                                                  '℈',
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: (Get.isDarkMode)
-                                                        ? Colors.red.shade300
-                                                        : Colors.red.shade700,
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 10,
-                                              ),
-                                              Text(
-                                                e.price.toString(),
+                                        ),
+                                        const SizedBox(height: 0),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: Text(
+                                                '℈',
                                                 style: TextStyle(
-                                                  fontSize: 27,
-                                                  fontWeight: FontWeight.w900,
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
                                                   color: (Get.isDarkMode)
-                                                      ? Colors.white
-                                                      : Colors.grey.shade800,
+                                                      ? Colors.red.shade300
+                                                      : Colors.red.shade700,
                                                 ),
                                               ),
-                                              const SizedBox(
-                                                width: 14,
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Text(
+                                              data['unit_price'].toString(),
+                                              style: TextStyle(
+                                                fontSize: 27,
+                                                fontWeight: FontWeight.w900,
+                                                color: (Get.isDarkMode)
+                                                    ? Colors.white
+                                                    : Colors.grey.shade800,
                                               ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                            ),
+                                            const SizedBox(width: 14),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                )
-                              : const SizedBox(
-                                  height: 0,
-                                  width: 0,
-                                );
-                        }).toList(),
-                      );
-                    }),
-                  ),
-                ],
+                                ),
+                              )
+                            : SizedBox();
+                      }).toList(),
+                    ),
+                  );
+                },
               ),
             ),
           ],

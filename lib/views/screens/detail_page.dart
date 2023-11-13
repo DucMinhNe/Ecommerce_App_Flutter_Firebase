@@ -9,16 +9,18 @@ import '../../controller/helper_classes/firebase_firestore_helper.dart';
 import '../../models/product_model.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({Key? key}) : super(key: key);
+  final String productId;
+  final Map<String, dynamic> productData;
+
+  DetailPage({required this.productId, required this.productData});
 
   @override
-  State<DetailPage> createState() => _DetailPageState();
+  _DetailPageState createState() => _DetailPageState();
 }
 
 class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
-    products e = ModalRoute.of(context)!.settings.arguments as products;
     return Scaffold(
       backgroundColor:
           (Get.isDarkMode) ? Colors.red.shade200 : Colors.red.shade100,
@@ -107,7 +109,7 @@ class _DetailPageState extends State<DetailPage> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              e.name,
+                              widget.productData['product_name'] ?? '',
                               style: const TextStyle(
                                   fontWeight: FontWeight.w800, fontSize: 33),
                             ),
@@ -127,7 +129,7 @@ class _DetailPageState extends State<DetailPage> {
                               width: 3,
                             ),
                             Text(
-                              e.price.toString(),
+                              widget.productData['unit_price'] ?? '',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 33,
@@ -139,7 +141,7 @@ class _DetailPageState extends State<DetailPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: Text(
-                          e.category,
+                          widget.productData['product_category_name'] ?? '',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 23,
@@ -162,7 +164,7 @@ class _DetailPageState extends State<DetailPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: const [
                             Text(
-                              '⭐️ 5.4',
+                              '⭐️ 4.6',
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w600,
@@ -186,7 +188,7 @@ class _DetailPageState extends State<DetailPage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20.0, vertical: 40),
                         child: Text(
-                          e.description,
+                          widget.productData['description'] ?? '',
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 22,
@@ -197,166 +199,38 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(20.0),
-                        child: StreamBuilder(
-                          stream: FireBaseStoreHelper.db
-                              .collection("cartProduct")
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasError) {
-                              return ElevatedButton(
-                                style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    Colors.red.shade500,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  Provider.of<CartController>(context,
-                                          listen: false)
-                                      .addToCart(e: e);
-                                },
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  height: 70,
-                                  width: double.infinity,
-                                  child: const Text(
-                                    'Add to Cart',
-                                    style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            } else if (snapshot.hasData) {
-                              QuerySnapshot<Map<String, dynamic>>? favourite =
-                                  snapshot.data;
-                              List<QueryDocumentSnapshot<Map<String, dynamic>>>
-                                  allFav = favourite!.docs;
-                              if (allFav.isNotEmpty) {
-                                int check = 0;
-                                allFav.forEach((f) {
-                                  if (f['name'] == e.name) {
-                                    check = 1;
-                                  }
-                                });
-                                if (check == 0) {
-                                  return ElevatedButton(
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                        Colors.red.shade500,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      Provider.of<CartController>(context,
-                                              listen: false)
-                                          .addToCart(e: e);
-                                    },
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      height: 70,
-                                      width: double.infinity,
-                                      child: const Text(
-                                        'Add to Cart',
-                                        style: TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  return ElevatedButton(
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                        Colors.grey.shade500,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          backgroundColor: Colors.red,
-                                          duration: Duration(seconds: 1),
-                                          behavior: SnackBarBehavior.floating,
-                                          content: Text(
-                                            'Product Already addaed to cart',
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      height: 70,
-                                      width: double.infinity,
-                                      child: const Text(
-                                        'Added to Cart',
-                                        style: TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }
-                              } else {
-                                return ElevatedButton(
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                      Colors.red.shade500,
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    Provider.of<CartController>(context,
-                                            listen: false)
-                                        .addToCart(e: e);
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    height: 70,
-                                    width: double.infinity,
-                                    child: const Text(
-                                      'Add to Cart',
-                                      style: TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                            return ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                  Colors.red.shade500,
-                                ),
-                              ),
-                              onPressed: () {
-                                Provider.of<CartController>(context,
-                                        listen: false)
-                                    .addToCart(e: e);
-                              },
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 70,
-                                width: double.infinity,
-                                child: const Text(
-                                  'Add to Cart',
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            );
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                              Colors.red.shade500,
+                            ),
+                          ),
+                          onPressed: () {
+                            FirebaseFirestore.instance
+                                .collection('Cart')
+                                .add({
+                                  'customerRef': 'JZlP4lYxRfas7yymAmpP',
+                                  'productRef': widget.productId,
+                                  'quantity': 1,
+                                  'price': int.parse(
+                                      widget.productData['unit_price']),
+                                })
+                                .then((value) {})
+                                .catchError((error) {});
                           },
+                          child: Container(
+                            alignment: Alignment.center,
+                            height: 70,
+                            width: double.infinity,
+                            child: const Text(
+                              'Add to Cart',
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                       const Spacer(),
@@ -369,10 +243,11 @@ class _DetailPageState extends State<DetailPage> {
                       child: Align(
                         alignment: Alignment.topCenter,
                         child: Hero(
-                          tag: e.name,
+                          tag: widget.productData['product_name'] ?? '',
                           child: Transform.translate(
                             offset: const Offset(0, -250),
-                            child: Image.asset(e.image),
+                            child: Image.network(
+                                widget.productData['product_image'] ?? ''),
                           ),
                         ),
                       ),

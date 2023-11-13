@@ -42,8 +42,7 @@ class _CartScreenState extends State<CartScreen> {
           Expanded(
             flex: 9,
             child: StreamBuilder(
-              stream:
-                  FireBaseStoreHelper.db.collection("cartProduct").snapshots(),
+              stream: FireBaseStoreHelper.db.collection("Cart").snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Center(
@@ -97,11 +96,11 @@ class _CartScreenState extends State<CartScreen> {
                                       leading: Transform.scale(
                                         scale: 1.6,
                                         child: Hero(
-                                          tag: allFav[i]['name'],
+                                          tag: allFav[i]['quantity'],
                                           child: Transform.translate(
                                             offset: const Offset(3, 10),
                                             child: Image.asset(
-                                              allFav[i]['image'],
+                                              allFav[i]['quantity'],
                                             ),
                                           ),
                                         ),
@@ -111,7 +110,7 @@ class _CartScreenState extends State<CartScreen> {
                                         padding: const EdgeInsets.only(
                                             left: 10, top: 8.0),
                                         child: Text(
-                                          allFav[i]['name'],
+                                          allFav[i]['quantity'],
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w700,
                                             letterSpacing: 0,
@@ -138,7 +137,8 @@ class _CartScreenState extends State<CartScreen> {
                                                         context,
                                                         listen: false)
                                                     .deleteFromCart(
-                                                        Uid: allFav[i]['Uid']);
+                                                        Uid: allFav[i]
+                                                            ['quantity']);
                                               },
                                               child: const Icon(
                                                 Icons.delete,
@@ -170,7 +170,7 @@ class _CartScreenState extends State<CartScreen> {
                                                         vertical: 4.0,
                                                         horizontal: 10),
                                                 child: Text(
-                                                  allFav[i]['category'],
+                                                  allFav[i]['quantity'],
                                                   style: const TextStyle(
                                                     color: Colors.grey,
                                                     fontWeight: FontWeight.w700,

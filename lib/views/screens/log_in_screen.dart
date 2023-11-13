@@ -22,16 +22,6 @@ class _LogInScreenState extends State<LogInScreen> {
           SizedBox(
             width: 20,
           ),
-          // Align(
-          //   alignment: Alignment.centerLeft,
-          //   child: Text(
-          //     'Đăng Ký',
-          //     style: TextStyle(
-          //         fontSize: 35,
-          //         fontWeight: FontWeight.w900,
-          //         color: Colors.blue),
-          //   ),
-          // ),
         ],
         leading: GestureDetector(
           onTap: () {

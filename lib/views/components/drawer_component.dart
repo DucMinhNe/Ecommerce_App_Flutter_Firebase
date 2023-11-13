@@ -227,6 +227,28 @@ class _drawerComponentState extends State<drawerComponent> {
                       ),
                       GestureDetector(
                         onTap: () {
+                          // Navigator.of(context).pushNamed('CartScreen');
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: const [
+                              Icon(Icons.contact_mail),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Text(
+                                'Sổ Địa Chỉ',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
                           Navigator.of(context).pushNamed('CartScreen');
                         },
                         child: Container(
