@@ -37,11 +37,7 @@ class _LogSignPageState extends State<LogSignPage> {
               ),
               ElevatedButton(
                 onPressed: () {
-<<<<<<< HEAD
-                  Navigator.pushNamed(context, 'logInScreen');
-=======
                   Navigator.pushNamed(context, 'signUpScreen');
->>>>>>> main
                 },
                 child: const Text('Đăng Ký'),
               ),

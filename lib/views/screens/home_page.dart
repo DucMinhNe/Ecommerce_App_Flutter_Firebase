@@ -2,19 +2,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-<<<<<<< HEAD
-import 'package:get/get_core/src/get_main.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import '../../controller/getx/category_controller_getx.dart';
-import '../../models/resources.dart';
-=======
 
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../controller/getx/category_controller_getx.dart';
 
->>>>>>> main
 import '../components/drawer_component.dart';
 
 class HomePage extends StatefulWidget {
