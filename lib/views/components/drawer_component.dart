@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ecommerce_app_firebase/controller/helper_classes/firebase_auth_helper.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,6 +12,7 @@ class drawerComponent extends StatefulWidget {
 }
 
 class _drawerComponentState extends State<drawerComponent> {
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   String _userUID = '';
   @override
   void initState() {
@@ -188,7 +190,8 @@ class _drawerComponentState extends State<drawerComponent> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // Navigator.of(context).pushNamed('CartScreen');
+                          Navigator.of(context)
+                              .pushNamed('addressCustomerMain');
                         },
                         child: Container(
                           padding: EdgeInsets.all(15),
@@ -250,7 +253,11 @@ class _drawerComponentState extends State<drawerComponent> {
                       ),
                       GestureDetector(
                         onTap: () async {
-                          await FirebaseAuthHelper.firebaseAuthHelper.signOut();
+                          await firebaseAuth.signOut();
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          await prefs.remove(
+                              'userUID'); // Xóa thông tin userUID khi đăng xuất
                           Navigator.pushReplacementNamed(
                               context, 'logSignPage');
                         },

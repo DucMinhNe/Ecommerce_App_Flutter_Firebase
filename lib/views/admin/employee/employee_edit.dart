@@ -125,7 +125,6 @@ class _EmployeeEditState extends State<EmployeeEdit> {
     );
   }
 
-  @override
   Widget _buildTextField(String label, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

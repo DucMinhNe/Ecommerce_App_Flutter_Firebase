@@ -7,17 +7,23 @@ import 'package:ecommerce_app_firebase/views/admin/customer/customer_main.dart';
 import 'package:ecommerce_app_firebase/views/admin/employee/employee_create.dart';
 import 'package:ecommerce_app_firebase/views/admin/employee/employee_edit.dart';
 import 'package:ecommerce_app_firebase/views/admin/employee/employee_main.dart';
+import 'package:ecommerce_app_firebase/views/admin/order/order_create.dart';
+import 'package:ecommerce_app_firebase/views/admin/order/order_main.dart';
 import 'package:ecommerce_app_firebase/views/admin/product/product_create.dart';
 import 'package:ecommerce_app_firebase/views/admin/product/product_edit.dart';
 import 'package:ecommerce_app_firebase/views/admin/product/product_main.dart';
+import 'package:ecommerce_app_firebase/views/screens/address_customer/address_customer_create.dart';
+import 'package:ecommerce_app_firebase/views/screens/address_customer/address_customer_edit.dart';
+import 'package:ecommerce_app_firebase/views/screens/address_customer/address_customer_main.dart';
 import 'package:ecommerce_app_firebase/views/screens/cart_screen.dart';
+import 'package:ecommerce_app_firebase/views/screens/checkout_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/detail_page.dart';
 import 'package:ecommerce_app_firebase/views/screens/favourite_list_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/home_page.dart';
 import 'package:ecommerce_app_firebase/views/screens/intro_screen.dart';
 
 import 'package:ecommerce_app_firebase/views/screens/log_sign_page.dart';
-import 'package:ecommerce_app_firebase/views/screens/sign_in_screen_mod.dart';
+import 'package:ecommerce_app_firebase/views/screens/sign_in_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/sign_up_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/splash_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/view_screen.dart';
@@ -77,7 +83,7 @@ class _myAppState extends State<myApp> {
             },
             'favouriteScreen': (context) => FavouriteScreen(),
             'CartScreen': (context) => CartScreen(),
-
+            'checkOutScreen': (context) => CheckOutScreen(),
             //admin
             'adminMain': (context) => AdminMain(),
             //Product
@@ -132,6 +138,42 @@ class _myAppState extends State<myApp> {
               );
             },
             'customerMain': (context) => CustomerMain(),
+
+            //addressCustomer
+            'addressCustomerCreate': (context) => AddressCustomerCreate(),
+            'addressCustomerEdit': (context) {
+              // Nhận đối tượng arguments từ đường dẫn
+              final arguments = ModalRoute.of(context)?.settings.arguments
+                  as Map<String, dynamic>;
+
+              // Lấy addressCustomerId từ đối tượng arguments
+              final addressCustomerId = arguments['addressCustomerId'] ?? '';
+
+              // Truyền addressCustomerId và addressCustomerData cho trang addressCustomerEdit
+              return AddressCustomerEdit(
+                addressCustomerId: addressCustomerId,
+                addressCustomerData: arguments['addressCustomerData'] ?? {},
+              );
+            },
+            'addressCustomerMain': (context) => AddressCustomerMain(),
+
+            //order
+            'orderCreate': (context) => OrderCreate(),
+            // 'orderEdit': (context) {
+            //   // Nhận đối tượng arguments từ đường dẫn
+            //   final arguments = ModalRoute.of(context)?.settings.arguments
+            //       as Map<String, dynamic>;
+
+            //   // Lấy orderId từ đối tượng arguments
+            //   final orderId = arguments['orderId'] ?? '';
+
+            //   // Truyền orderId và orderData cho trang orderEdit
+            //   return OrderEdit(
+            //     orderId: orderId,
+            //     orderData: arguments['orderData'] ?? {},
+            //   );
+            // },
+            'orderMain': (context) => OrderMain(),
           },
         );
       },

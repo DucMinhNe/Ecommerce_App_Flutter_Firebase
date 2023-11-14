@@ -144,7 +144,7 @@ class _AdminMainState extends State<AdminMain> {
                         color: Colors.blue,
                         child: InkWell(
                           onTap: () {
-                            print('Đơn đặt hàng');
+                            Navigator.of(context).pushNamed('orderMain');
                           },
                           child: Container(
                             height: 100,

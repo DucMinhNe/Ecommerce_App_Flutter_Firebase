@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailPage extends StatefulWidget {
   final String productId;
+
   final Map<String, dynamic> productData;
 
   DetailPage({required this.productId, required this.productData});
@@ -14,6 +16,20 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  String _userUID = '';
+  @override
+  void initState() {
+    _loadUserUID();
+    super.initState();
+  }
+
+  Future<void> _loadUserUID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userUID = prefs.getString('userUID') ?? '';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -202,10 +218,10 @@ class _DetailPageState extends State<DetailPage> {
                           ),
                           onPressed: () {
                             FirebaseFirestore.instance.collection('Cart').add({
-                              'customerRef': 'JZlP4lYxRfas7yymAmpP',
+                              'customerRef': _userUID,
                               'productRef': widget.productId,
                               'quantity': 1,
-                              'price':
+                              'unit_price':
                                   int.parse(widget.productData['unit_price']),
                             }).then((value) {
                               ScaffoldMessenger.of(context).showSnackBar(

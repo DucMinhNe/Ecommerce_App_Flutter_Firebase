@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -12,13 +13,29 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  String _userUID = '';
+  @override
+  void initState() {
+    _loadUserUID();
+    super.initState();
+  }
+
+  Future<void> _loadUserUID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userUID = prefs.getString('userUID') ?? '';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         icon: null,
         backgroundColor: Colors.red,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushReplacementNamed(context, 'checkOutScreen');
+        },
         label: const Text(
           'Đặt Hàng ',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -37,7 +54,10 @@ class _CartScreenState extends State<CartScreen> {
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('Cart').snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('Cart')
+                  .where('customerRef', isEqualTo: _userUID)
+                  .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
@@ -96,7 +116,7 @@ class _CartScreenState extends State<CartScreen> {
                                   children: [
                                     Text('${productData['description'] ?? ''}'),
                                     Text(
-                                      '${cartData['price']}',
+                                      'Giá: ${cartData['unit_price'] * cartData['quantity']}',
                                       style: TextStyle(color: Colors.grey),
                                     ),
                                   ],
