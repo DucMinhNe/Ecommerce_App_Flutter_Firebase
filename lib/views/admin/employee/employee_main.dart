@@ -46,8 +46,7 @@ class _EmployeeMainState extends State<EmployeeMain> {
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: Text(
-                            '${employeeData['first_name']} ${employeeData['last_name']}' ??
-                                '',
+                            '${employeeData['first_name']} ${employeeData['last_name']}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -160,8 +159,7 @@ class _EmployeeMainState extends State<EmployeeMain> {
                         ),
                       ),
                       title: Text(
-                        '${employeeData['first_name']} ${employeeData['last_name']}' ??
-                            '',
+                        '${employeeData['first_name']} ${employeeData['last_name']}',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(

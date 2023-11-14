@@ -160,7 +160,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     final cartData =
                         cartItems[index].data() as Map<String, dynamic>;
                     final productRef = cartData['productRef'];
-
+                    _totalPrice = 0;
                     return FutureBuilder<DocumentSnapshot>(
                       future: FirebaseFirestore.instance
                           .collection('Product')

@@ -46,8 +46,7 @@ class _CustomerMainState extends State<CustomerMain> {
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: Text(
-                            '${customerData['first_name']} ${customerData['last_name']}' ??
-                                '',
+                            '${customerData['first_name']} ${customerData['last_name']}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -171,8 +170,7 @@ class _CustomerMainState extends State<CustomerMain> {
                         ),
                       ),
                       title: Text(
-                        '${customerData['first_name']} ${customerData['last_name']}' ??
-                            '',
+                        '${customerData['first_name']} ${customerData['last_name']}',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Column(

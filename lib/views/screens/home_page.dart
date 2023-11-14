@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../controller/getx/category_controller_getx.dart';
-
 import '../components/drawer_component.dart';
 
 class HomePage extends StatefulWidget {

@@ -8,24 +8,6 @@ class CustomerFsMethods {
         .set(customerInfoMap);
   }
 
-  Future<void> addCustomerWithAddress(Map<String, dynamic> customerInfoMap,
-      Map<String, dynamic> addressInfoMap) async {
-    // Tạo một tài liệu mới trong collection "Customer"
-    DocumentReference customerDocRef = await FirebaseFirestore.instance
-        .collection("Customer")
-        .add(customerInfoMap);
-
-    // Lấy ID của tài liệu vừa tạo
-    String customerId = customerDocRef.id;
-
-    // Tạo một collection "address_customer" trong tài liệu mới
-    CollectionReference addressCollectionRef =
-        customerDocRef.collection("address_customer");
-
-    // Thêm dữ liệu vào collection "address_customer"
-    await addressCollectionRef.add(addressInfoMap);
-  }
-
   Future<QuerySnapshot> getAllCustomers() {
     return FirebaseFirestore.instance.collection("Customer").get().then(
       (value) {
