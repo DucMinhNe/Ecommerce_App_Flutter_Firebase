@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class drawerComponent extends StatefulWidget {
@@ -14,6 +16,7 @@ class drawerComponent extends StatefulWidget {
 class _drawerComponentState extends State<drawerComponent> {
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   String _userUID = '';
+  var _userData;
   @override
   void initState() {
     _loadUserUID();
@@ -29,7 +32,6 @@ class _drawerComponentState extends State<drawerComponent> {
 
   @override
   Widget build(BuildContext context) {
-    ;
     return Drawer(
       child: Builder(builder: (context) {
         return Column(
@@ -45,7 +47,7 @@ class _drawerComponentState extends State<drawerComponent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(
-                        height: 60,
+                        height: 50,
                       ),
                       StreamBuilder(
                         stream: FirebaseFirestore.instance
@@ -58,13 +60,20 @@ class _drawerComponentState extends State<drawerComponent> {
                             return CircularProgressIndicator(); // or any other loading widget
                           }
                           if (snapshot.hasData && snapshot.data != null) {
-                            var userData = snapshot.data;
+                            var userData = snapshot.data?.data();
+                            _userData = snapshot.data?.data();
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CircleAvatar(
-                                    // ... Your avatar setup
-                                    ),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 10.0),
+                                  child: CircleAvatar(
+                                    radius: 50,
+                                    backgroundColor: Colors.blue,
+                                    backgroundImage: NetworkImage(
+                                        userData?['customer_image']),
+                                  ),
+                                ),
                                 Text(
                                   userData?['first_name'] +
                                       ' ' +
@@ -82,7 +91,6 @@ class _drawerComponentState extends State<drawerComponent> {
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
                                 ),
-                                // Display other user info as needed
                               ],
                             );
                           }
@@ -151,21 +159,32 @@ class _drawerComponentState extends State<drawerComponent> {
                       const SizedBox(
                         width: 20,
                       ),
-                      Container(
-                        padding: EdgeInsets.all(15),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
-                            Icon(Icons.person),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Text(
-                              'Thông tin',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20),
-                            )
-                          ],
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                            'profileEdit',
+                            arguments: {
+                              'customerId': _userUID,
+                              'customerData': _userData,
+                            },
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: const [
+                              Icon(Icons.person),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Text(
+                                'Thông tin',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(
@@ -220,12 +239,34 @@ class _drawerComponentState extends State<drawerComponent> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: const [
-                              Icon(Icons.shopping_cart),
+                              Icon(Icons.shopping_bag),
                               SizedBox(
                                 width: 20,
                               ),
                               Text(
                                 'Giỏ Hàng',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          // Navigator.of(context).pushNamed('CartScreen');
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: const [
+                              Icon(Icons.shopping_cart),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Text(
+                                'Đơn Hàng',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 20),
                               )

@@ -193,3 +193,58 @@
 //     ],
 //   ),
 // ),
+
+
+//  Future<void> _confirmOrder() async {
+//     // Tạo một map chứa thông tin đơn hàng
+//     Map<String, dynamic> orderData = {
+//       'customerRef': _userUID,
+//       'order_date_time': _formattedDate,
+//       'addressCustomerRef': _selectedAddress,
+//       'shipping_cost': _shippingCost,
+//       'total_price': _totalPrice + _shippingCost,
+//       'payment_method_name': _paymentMethod,
+//       'status': 'Đang Xử Lý',
+//     };
+
+//     // Thêm đơn hàng vào Firestore
+//     DocumentReference orderRef =
+//         await FirebaseFirestore.instance.collection('Order').add(orderData);
+
+//     // Thêm chi tiết đơn hàng từ giỏ hàng
+//     await FirebaseFirestore.instance
+//         .collection('Cart')
+//         .where('customerRef', isEqualTo: _userUID)
+//         .get()
+//         .then((querySnapshot) {
+//       querySnapshot.docs.forEach((doc) async {
+//         // Lấy thông tin từ giỏ hàng
+//         Map<String, dynamic> cartData = doc.data() as Map<String, dynamic>;
+//         String productRef = cartData['productRef'];
+//         int quantity = cartData['quantity'];
+//         double unitPrice = cartData['unit_price'];
+
+//         // Tạo một bản ghi mới trong collection orderDetail
+//         await FirebaseFirestore.instance
+//             .collection('Order')
+//             .doc(orderRef.id) // sử dụng orderId của đơn hàng chính
+//             .collection('orderDetail')
+//             .add({
+//           'quantity': quantity,
+//           'unit_price': unitPrice,
+//           'productRef': productRef,
+//         });
+//       });
+//     });
+
+//     // Xóa giỏ hàng sau khi đã đặt hàng
+//     await FirebaseFirestore.instance
+//         .collection('Cart')
+//         .where('customerRef', isEqualTo: _userUID)
+//         .get()
+//         .then((querySnapshot) {
+//       querySnapshot.docs.forEach((doc) {
+//         doc.reference.delete();
+//       });
+//     });
+//   }

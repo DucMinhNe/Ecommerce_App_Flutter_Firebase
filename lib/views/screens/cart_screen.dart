@@ -64,7 +64,13 @@ class _CartScreenState extends State<CartScreen> {
                   return Text('Error: ${snapshot.error}');
                 }
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
+                  return Container(
+                    width: 500.0,
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(
+                      value: 30,
+                    ),
+                  );
                 }
                 List<DocumentSnapshot> cartItems = snapshot.data!.docs;
 
@@ -156,7 +162,14 @@ class _CartScreenState extends State<CartScreen> {
                             return Text('Product not found');
                           }
                         } else {
-                          return CircularProgressIndicator();
+                          return Container(
+                            width: 500.0,
+                            height: 120.0,
+                            alignment: Alignment.center,
+                            child: CircularProgressIndicator(
+                              value: 1,
+                            ),
+                          );
                         }
                       },
                     );

@@ -180,7 +180,13 @@ class _HomePageState extends State<HomePage> {
                         return Text('Error: ${snapshot.error}');
                       }
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator(); // or a loading indicator
+                        return Container(
+                          width: 50.0,
+                          alignment: Alignment.center,
+                          child: CircularProgressIndicator(
+                            value: 30,
+                          ),
+                        );
                       }
                       List<DocumentSnapshot> categories = snapshot.data!.docs;
 
@@ -279,7 +285,13 @@ class _HomePageState extends State<HomePage> {
                   }
 
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator(); // or a loading indicator
+                    return Container(
+                      width: 500.0,
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(
+                        value: 30,
+                      ),
+                    ); // or a loading indicator
                   }
 
                   List<DocumentSnapshot> products = snapshot.data!.docs;

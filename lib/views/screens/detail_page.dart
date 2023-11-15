@@ -34,12 +34,12 @@ class _DetailPageState extends State<DetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:
-          (Get.isDarkMode) ? Colors.red.shade200 : Colors.red.shade100,
+          (Get.isDarkMode) ? Colors.blue.shade200 : Colors.red.shade100,
       appBar: AppBar(
         leadingWidth: 100,
         leading: Padding(
           padding:
-              const EdgeInsets.only(left: 22, top: 10, bottom: 10, right: 20),
+              const EdgeInsets.only(left: 10, top: 10, bottom: 10, right: 20),
           child: ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
@@ -51,9 +51,9 @@ class _DetailPageState extends State<DetailPage> {
           ),
         ),
         foregroundColor:
-            (Get.isDarkMode) ? Colors.red.shade200 : Colors.red.shade100,
+            (Get.isDarkMode) ? Colors.blue.shade200 : Colors.red.shade100,
         backgroundColor:
-            (Get.isDarkMode) ? Colors.red.shade200 : Colors.red.shade100,
+            (Get.isDarkMode) ? Colors.blue.shade200 : Colors.red.shade100,
         elevation: 0,
         bottomOpacity: 0.0,
         scrolledUnderElevation: 0,
@@ -75,7 +75,7 @@ class _DetailPageState extends State<DetailPage> {
             ),
           ),
           const SizedBox(
-            width: 6,
+            width: 5,
           )
         ],
       ),
@@ -86,7 +86,7 @@ class _DetailPageState extends State<DetailPage> {
             child: SizedBox(),
           ),
           Expanded(
-            flex: 5,
+            flex: 6,
             child: Container(
               decoration: BoxDecoration(
                 color: (Get.isDarkMode) ? Colors.grey.shade900 : Colors.white,
@@ -125,10 +125,17 @@ class _DetailPageState extends State<DetailPage> {
                                   fontWeight: FontWeight.w800, fontSize: 33),
                             ),
                             const Spacer(),
+                            Text(
+                              widget.productData['unit_price'] ?? '',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 33,
+                              ),
+                            ),
                             const Padding(
                               padding: EdgeInsets.all(5.0),
                               child: Text(
-                                '℈',
+                                'VNĐ',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 22,
@@ -138,13 +145,6 @@ class _DetailPageState extends State<DetailPage> {
                             ),
                             const SizedBox(
                               width: 3,
-                            ),
-                            Text(
-                              widget.productData['unit_price'] ?? '',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 33,
-                              ),
                             ),
                           ],
                         ),
@@ -208,44 +208,91 @@ class _DetailPageState extends State<DetailPage> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                              Colors.red.shade500,
-                            ),
-                          ),
-                          onPressed: () {
-                            FirebaseFirestore.instance.collection('Cart').add({
-                              'customerRef': _userUID,
-                              'productRef': widget.productId,
-                              'quantity': 1,
-                              'unit_price':
-                                  int.parse(widget.productData['unit_price']),
-                            }).then((value) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content:
-                                      Text('Đã thêm vào giỏ hàng thành công'),
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10.0),
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                  Colors.red.shade500,
                                 ),
-                              );
-                            }).catchError((error) {});
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: 70,
-                            width: double.infinity,
-                            child: const Text(
-                              'Add to Cart',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                FirebaseFirestore.instance
+                                    .collection('Cart')
+                                    .add({
+                                  'customerRef': _userUID,
+                                  'productRef': widget.productId,
+                                  'quantity': 1,
+                                  'unit_price': int.parse(
+                                      widget.productData['unit_price']),
+                                }).then((value) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Đã thêm vào giỏ hàng thành công'),
+                                    ),
+                                  );
+                                }).catchError((error) {});
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: 50,
+                                width: 120,
+                                child: const Text(
+                                  'Add to Cart',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 50),
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                  Colors.red.shade500,
+                                ),
+                              ),
+                              onPressed: () {
+                                FirebaseFirestore.instance
+                                    .collection('Cart')
+                                    .add({
+                                  'customerRef': _userUID,
+                                  'productRef': widget.productId,
+                                  'quantity': 1,
+                                  'unit_price': int.parse(
+                                      widget.productData['unit_price']),
+                                }).then((value) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Đã thêm vào giỏ hàng thành công'),
+                                    ),
+                                  );
+                                }).catchError((error) {});
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: 50,
+                                width: 120,
+                                child: const Text(
+                                  'Add to Cart',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const Spacer(),
                     ],

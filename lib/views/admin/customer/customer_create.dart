@@ -18,8 +18,8 @@ class _CustomerCreateState extends State<CustomerCreate> {
   TextEditingController emailController = TextEditingController();
   TextEditingController phone_numberController = TextEditingController();
   TextEditingController genderController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
+  // TextEditingController passwordController = TextEditingController();
+  // TextEditingController addressController = TextEditingController();
   TextEditingController customer_imageController = TextEditingController();
 
   Future<void> _pickImage() async {
@@ -48,8 +48,8 @@ class _CustomerCreateState extends State<CustomerCreate> {
               _buildTextField("Email", emailController),
               _buildTextField("Phone Number", phone_numberController),
               _buildTextField("Gender", genderController),
-              _buildTextField("Password", passwordController),
-              _buildTextField("Address", addressController),
+              // _buildTextField("Password", passwordController),
+              // _buildTextField("Address", addressController),
               _buildTextField("Customer Image", customer_imageController),
               TextButton(
                 onPressed: _pickImage,
@@ -114,8 +114,8 @@ class _CustomerCreateState extends State<CustomerCreate> {
           "email": emailController.text,
           "phone_number": phone_numberController.text,
           "gender": genderController.text,
-          "password": passwordController.text,
-          "address_customer": addressController.text,
+          // "password": passwordController.text,
+          // "address_customer": addressController.text,
           "customer_image": imageURL,
         };
 

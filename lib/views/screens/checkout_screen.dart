@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class CheckOutScreen extends StatefulWidget {
   const CheckOutScreen({Key? key}) : super(key: key);
@@ -14,6 +15,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   String _userUID = '';
   String _selectedAddress = '';
   double _totalPrice = 0.0;
+  double _shippingCost = 300.0;
+  String _paymentMethod = 'COD';
+  String _formattedDate = '';
   @override
   void initState() {
     _loadUserUID();
@@ -27,13 +31,122 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     });
   }
 
+  Future<String> getAddressCustomerId(String selectedAddress) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('Customer')
+        .doc(_userUID)
+        .collection('AddressCustomer')
+        .where('name', isEqualTo: selectedAddress)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      return querySnapshot.docs.first.id; // Lấy ID của tài liệu đầu tiên
+    } else {
+      return ''; // Trả về giá trị mặc định nếu không tìm thấy
+    }
+  }
+
+  Future<void> _confirmOrder() async {
+    try {
+      // Tạo một map chứa thông tin đơn hàng
+      String selectedAddressId = await getAddressCustomerId(_selectedAddress);
+      Map<String, dynamic> orderData = {
+        'customerRef': _userUID,
+        'employeeRef': '',
+        'order_date_time': _formattedDate,
+        'addressCustomerRef': selectedAddressId,
+        'shipping_cost': _shippingCost,
+        'total_price': _totalPrice + _shippingCost,
+        'payment_method_name': _paymentMethod,
+        'status': 'Chờ Xử Lý',
+      };
+
+      // Thêm đơn hàng vào Firestore
+      DocumentReference orderRef =
+          await FirebaseFirestore.instance.collection('Order').add(orderData);
+
+      // Lấy danh sách các Future khi thêm orderDetail
+      List<Future<void>> orderDetailFutures = [];
+
+      // Thêm chi tiết đơn hàng từ giỏ hàng
+      await FirebaseFirestore.instance
+          .collection('Cart')
+          .where('customerRef', isEqualTo: _userUID)
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) async {
+          // Lấy thông tin từ giỏ hàng
+          Map<String, dynamic> cartData = doc.data() as Map<String, dynamic>;
+          String productRef = cartData['productRef'];
+          double quantity =
+              cartData['quantity'].toDouble(); // Chuyển đổi sang double
+          double unitPrice =
+              cartData['unit_price'].toDouble(); // Chuyển đổi sang double
+
+          // Thêm Future cho việc thêm orderDetail
+          orderDetailFutures.add(
+            FirebaseFirestore.instance
+                .collection('Order')
+                .doc(orderRef.id)
+                .collection('OrderDetail')
+                .add({
+              'quantity': quantity,
+              'unit_price': unitPrice,
+              'productRef': productRef,
+            }),
+          );
+        });
+      });
+
+      // Chờ tất cả các Future hoàn thành
+      await Future.wait(orderDetailFutures);
+
+      // Xóa giỏ hàng sau khi đã đặt hàng
+      await FirebaseFirestore.instance
+          .collection('Cart')
+          .where('customerRef', isEqualTo: _userUID)
+          .get()
+          .then((querySnapshot) async {
+        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+          await doc.reference.delete();
+        }
+      });
+    } catch (e) {
+      // Xử lý lỗi nếu có
+      print('Error confirming order: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+    _formattedDate = formattedDate;
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         icon: null,
         backgroundColor: Colors.red,
-        onPressed: () {},
+        onPressed: () async {
+          _confirmOrder();
+          await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Đặt Hàng Thành Công'),
+                content: Text('Cảm ơn bạn đã đặt hàng!'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Đóng popup
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+          Navigator.pushReplacementNamed(context, 'homePage');
+        },
         label: const Text(
           'Xác Nhận',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -43,7 +156,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         title: Text(
           'Đặt Hàng',
           style: GoogleFonts.alata(
-            fontSize: 30,
+            fontSize: 28,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -56,7 +169,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             child: Text(
               'Thông Tin Giao Hàng',
               style: GoogleFonts.alata(
-                fontSize: 30,
+                fontSize: 25,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -132,11 +245,14 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             },
           ),
 
-          Text(
-            'Các Sản Phẩm',
-            style: GoogleFonts.alata(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Các Sản Phẩm',
+              style: GoogleFonts.alata(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           Expanded(
@@ -234,9 +350,39 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Tổng Tiền: $_totalPrice',
+              'Thời Gian Đặt Hàng:\n$formattedDate',
               style: GoogleFonts.alata(
-                fontSize: 30,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Hình Thức Thanh Toán: $_paymentMethod',
+              style: GoogleFonts.alata(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Tiền Ship: $_shippingCost',
+              style: GoogleFonts.alata(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Tổng Tiền: ${_totalPrice + _shippingCost}',
+              style: GoogleFonts.alata(
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),

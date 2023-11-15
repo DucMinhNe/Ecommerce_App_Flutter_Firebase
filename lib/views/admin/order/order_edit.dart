@@ -1,190 +1,176 @@
-// import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecommerce_app_firebase/views/admin/order/order_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-// import 'package:flutter/material.dart';
-// import 'product_firestore.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+class OrderEdit extends StatefulWidget {
+  final String orderId;
+  final Map<String, dynamic> orderData;
 
-// class ProductEdit extends StatefulWidget {
-//   final String productId;
-//   final Map<String, dynamic> productData;
+  OrderEdit({required this.orderId, required this.orderData});
 
-//   ProductEdit({required this.productId, required this.productData});
+  @override
+  _OrderEditState createState() => _OrderEditState();
+}
 
-//   @override
-//   _ProductEditState createState() => _ProductEditState();
-// }
+class _OrderEditState extends State<OrderEdit> {
+  OrderFsMethods orderFsMethods = OrderFsMethods();
+  Map<String, dynamic> _addressCustomerData = {};
+  late TextEditingController _customerRefController;
+  late TextEditingController _employeeRefController;
+  late TextEditingController _orderDateTimeController;
+  late TextEditingController _addressCustomerRefController;
+  late TextEditingController _shippingCostController;
+  late TextEditingController _totalPriceController;
+  late TextEditingController _paymentMethodNameController;
+  late TextEditingController _statusController;
 
-// class _ProductEditState extends State<ProductEdit> {
-//   late TextEditingController _productNameController;
-//   late TextEditingController _descriptionController;
-//   late TextEditingController _unitPriceController;
-//   late TextEditingController _stockQuantityController;
-//   late TextEditingController _productImageController;
-//   late TextEditingController _productCategoryNameController;
-//   late TextEditingController _providerNameController;
+  late TextEditingController _addressCustomerNameController;
+  late TextEditingController _addressCustomerPhoneNumberController;
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     // Setting initial values for controllers
-//     _productNameController =
-//         TextEditingController(text: widget.productData['product_name'] ?? '');
-//     _descriptionController =
-//         TextEditingController(text: widget.productData['description'] ?? '');
-//     _unitPriceController = TextEditingController(
-//         text: widget.productData['unit_price']?.toString() ?? '');
-//     _stockQuantityController = TextEditingController(
-//         text: widget.productData['stock_quantity']?.toString() ?? '');
-//     _productImageController =
-//         TextEditingController(text: widget.productData['product_image'] ?? '');
-//     _productCategoryNameController = TextEditingController(
-//         text: widget.productData['product_category_name'] ?? '');
-//     _providerNameController =
-//         TextEditingController(text: widget.productData['provider_name'] ?? '');
-//   }
+  bool _isUpdating = false;
+  String _userUID = '';
+  Future<void> _loadUserUID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userUID = prefs.getString('userUID') ?? '';
+    });
+  }
 
-//   // Function to pick an image
-//   Future<void> _pickImage() async {
-//     final ImagePicker _picker = ImagePicker();
-//     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+  @override
+  void initState() {
+    _loadUserUID();
 
-//     if (image != null) {
-//       final String oldImage =
-//           _productImageController.text; // Store the path of the old image
-//       setState(() {
-//         _productImageController.text =
-//             image.path; // Save the path to the new image
-//       });
+    super.initState();
 
-//       // Check if an old image exists, then delete it
-//       if (oldImage.isNotEmpty) {
-//         try {
-//           await firebase_storage.FirebaseStorage.instance
-//               .refFromURL(oldImage)
-//               .delete();
-//         } catch (e) {
-//           print("Error deleting old image: $e");
-//           // Handle error while deleting old image
-//         }
-//       }
-//     }
-//   }
+    // Set initial values for controllers
+    _customerRefController =
+        TextEditingController(text: widget.orderData['customerRef'] ?? '');
+    _employeeRefController =
+        TextEditingController(text: widget.orderData['employeeRef'] ?? '');
+    _orderDateTimeController =
+        TextEditingController(text: widget.orderData['order_date_time'] ?? '');
+    _addressCustomerRefController = TextEditingController(
+        text: widget.orderData['addressCustomerRef'] ?? '');
+    _shippingCostController = TextEditingController(
+        text: widget.orderData['shipping_cost']?.toString() ?? '');
+    _totalPriceController = TextEditingController(
+        text: widget.orderData['total_price']?.toString() ?? '');
+    _paymentMethodNameController = TextEditingController(
+        text: widget.orderData['payment_method_name'] ?? '');
+    _statusController =
+        TextEditingController(text: widget.orderData['status'] ?? '');
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Edit Product'),
-//       ),
-//       body: SingleChildScrollView(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text('Product ID: ${widget.productId}'),
-//             SizedBox(height: 16),
-//             _buildTextField('Product Name', _productNameController),
-//             _buildTextField('Description', _descriptionController),
-//             _buildTextField('Unit Price', _unitPriceController),
-//             _buildTextField('Stock Quantity', _stockQuantityController),
-//             _buildTextField('Product Image', _productImageController),
-//             TextButton(
-//               onPressed: _pickImage,
-//               child: Text('Pick Image'),
-//             ),
-//             _buildTextField(
-//                 'Product Category Name', _productCategoryNameController),
-//             _buildTextField('Provider Name', _providerNameController),
-//             SizedBox(height: 32),
-//             ElevatedButton(
-//               onPressed: _updateProduct,
-//               child: Text('Save Changes'),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit Order'),
+      ),
+      body: _isUpdating ? _buildLoadingIndicator() : _buildForm(),
+    );
+  }
 
-//   Widget _buildTextField(String label, TextEditingController controller) {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         SizedBox(height: 10.0),
-//         TextFormField(
-//           controller: controller,
-//           decoration: InputDecoration(
-//             labelText: label,
-//           ),
-//         ),
-//         SizedBox(height: 16),
-//       ],
-//     );
-//   }
+  Widget _buildForm() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Order ID: ${widget.orderId}'),
+          SizedBox(height: 16),
+          _buildTextField('Customer UID', _customerRefController),
+          _buildTextField('Employee UID', _employeeRefController),
+          _buildTextField('Order Date Time', _orderDateTimeController),
+          _buildTextField(
+              'Address Customer UID', _addressCustomerRefController),
+          _buildTextField('Shipping Cost', _shippingCostController),
+          _buildTextField('Total Price', _totalPriceController),
+          _buildTextField('Payment Method Name', _paymentMethodNameController),
+          _buildTextField('Status', _statusController),
+          SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: _isUpdating ? null : _updateOrder,
+            child: Text('Save Changes'),
+          ),
+        ],
+      ),
+    );
+  }
 
-//   Future<String?> _uploadImage(String imagePath) async {
-//     try {
-//       File imageFile = File(imagePath); // Convert the imagePath to a File
-//       firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
-//           .ref()
-//           .child('product_images/${DateTime.now().millisecondsSinceEpoch}');
+  Widget _buildTextField(String label, TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 10.0),
+        TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: label,
+          ),
+        ),
+        SizedBox(height: 16),
+      ],
+    );
+  }
 
-//       final metadata = firebase_storage.SettableMetadata(
-//           contentType: 'image/jpeg'); // Image type (JPEG, PNG...)
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
 
-//       await ref.putFile(imageFile, metadata); // Use the imageFile here
+  void _updateOrder() async {
+    setState(() {
+      _isUpdating = true;
+    });
 
-//       String downloadURL = await ref.getDownloadURL();
-//       return downloadURL;
-//     } catch (e) {
-//       print("Error uploading image: $e");
-//       return null;
-//     }
-//   }
+    // Get the updated data from controllers
+    String updatedCustomerRef = _customerRefController.text.trim();
+    String updatedEmployeeRef = _employeeRefController.text.trim();
+    String updatedOrderDateTime = _orderDateTimeController.text.trim();
+    String updatedAddressCustomerRef =
+        _addressCustomerRefController.text.trim();
+    double updatedShippingCost =
+        double.parse(_shippingCostController.text.trim());
+    double updatedTotalPrice = double.parse(_totalPriceController.text.trim());
+    String updatedPaymentMethodName = _paymentMethodNameController.text.trim();
+    String updatedStatus = _statusController.text.trim();
 
-//   void _updateProduct() async {
-//     String? imageURL = await _uploadImage(_productImageController.text);
+    // Create a map with updated data
+    Map<String, dynamic> updatedData = {
+      'customerRef': updatedCustomerRef,
+      'employeeRef': updatedEmployeeRef,
+      'order_date_time': updatedOrderDateTime,
+      'addressCustomerRef': updatedAddressCustomerRef,
+      'shipping_cost': updatedShippingCost,
+      'total_price': updatedTotalPrice,
+      'payment_method_name': updatedPaymentMethodName,
+      'status': updatedStatus,
+      // Add other fields as needed
+    };
 
-//     // Get the updated data from controllers
-//     String updatedProductName = _productNameController.text.trim();
-//     String updatedDescription = _descriptionController.text.trim();
-//     String updatedUnitPrice = _unitPriceController.text.trim();
-//     String updatedStockQuantity = _stockQuantityController.text.trim();
-//     // String updatedProductImage = _productImageController.text.trim();
-//     String updatedProductCategoryName =
-//         _productCategoryNameController.text.trim();
-//     String updatedProviderName = _providerNameController.text.trim();
-
-//     // Create a map with updated data
-//     Map<String, dynamic> updatedData = {
-//       'product_name': updatedProductName,
-//       'description': updatedDescription,
-//       'unit_price': updatedUnitPrice,
-//       'stock_quantity': updatedStockQuantity,
-//       'product_image': imageURL,
-//       'product_category_name': updatedProductCategoryName,
-//       'provider_name': updatedProviderName,
-//       // Add other fields as needed
-//     };
-
-//     // Call the updateProduct function from your ProductFsMethods class
-//     try {
-//       ProductFsMethods().updateProduct(widget.productId, updatedData);
-//       Navigator.of(context).pushReplacementNamed('productMain');
-
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(
-//           content: Text('Product updated successfully'),
-//         ),
-//       );
-//     } catch (e) {
-//       print("Error updating product: $e");
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(
-//           content: Text('Error updating product. Please try again.'),
-//         ),
-//       );
-//     }
-//   }
-// }
+    // Call the updateOrder function from your OrderFsMethods class
+    try {
+      await OrderFsMethods().updateOrder(widget.orderId, updatedData);
+      Navigator.of(context).pushReplacementNamed('orderMain');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Order updated successfully'),
+        ),
+      );
+    } catch (e) {
+      print("Error updating order: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error updating order. Please try again.'),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isUpdating = false;
+      });
+    }
+  }
+}

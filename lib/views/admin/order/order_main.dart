@@ -47,82 +47,11 @@ class _OrderMainState extends State<OrderMain> {
                 // Create a Card for each order
                 return GestureDetector(
                   onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(
-                            orderData['order_name'] ?? '',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18, // Kích thước văn bản
-                              color: Colors.blue, // Màu cho văn bản
-                            ),
-                          ),
-                          content: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Customer Name: ${orderData['customerRef'] ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 16, // Kích thước văn bản
-                                ),
-                              ),
-                              Text(
-                                'Employee: ${orderData['employeeRef'] ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 16, // Kích thước văn bản
-                                ),
-                              ),
-                              Text(
-                                'Order Date Time: ${orderData['order_date_time'] ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 16, // Kích thước văn bản
-                                ),
-                              ),
-                              Text(
-                                'Address Customer: ${orderData['addressCustomerRef'] ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 16, // Kích thước văn bản
-                                ),
-                              ),
-                              Text(
-                                'Shipping Cost: ${orderData['shipping_cost'] ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 16, // Kích thước văn bản
-                                ),
-                              ),
-                              Text(
-                                'Total Price: ${orderData['total_price'] ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 16, // Kích thước văn bản
-                                ),
-                              ),
-                              Text(
-                                'Payment Method Name: ${orderData['payment_method_name'] ?? ''}',
-                                style: TextStyle(
-                                  fontSize: 16, // Kích thước văn bản
-                                ),
-                              ),
-                              // Thêm các thông tin khác cần hiển thị
-                            ],
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                'Close',
-                                style: TextStyle(
-                                  color: Colors.red, // Màu cho văn bản nút
-                                  fontSize: 18, // Kích thước văn bản
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
+                    Navigator.of(context).pushNamed(
+                      'orderEdit',
+                      arguments: {
+                        'orderId': orderId,
+                        'orderData': orderData,
                       },
                     );
                   },
@@ -145,7 +74,7 @@ class _OrderMainState extends State<OrderMain> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(orderData['total_price'] ?? ''),
+                          Text(orderData['total_price'].toString()),
                           Text(
                             '$orderId',
                             style: TextStyle(color: Colors.grey),
@@ -156,18 +85,6 @@ class _OrderMainState extends State<OrderMain> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {
-                              Navigator.of(context).pushNamed(
-                                'orderEdit',
-                                arguments: {
-                                  'orderId': orderId,
-                                  'orderData': orderData,
-                                },
-                              );
-                            },
-                          ),
-                          IconButton(
                             icon: Icon(Icons.delete),
                             onPressed: () {
                               showDialog(
@@ -176,7 +93,7 @@ class _OrderMainState extends State<OrderMain> {
                                   return AlertDialog(
                                     title: Text('Confirm Delete'),
                                     content: Text(
-                                      'Are you sure you want to delete this order?',
+                                      'Are you sure you want to delete this employee?',
                                     ),
                                     actions: [
                                       TextButton(
@@ -191,12 +108,12 @@ class _OrderMainState extends State<OrderMain> {
                                             await OrderFsMethods()
                                                 .deleteOrder(orderId);
                                             setState(() {
-                                              // Refresh the orders after deletion
                                               orderFsMethods.getAllOrders();
                                             });
                                             Navigator.of(context).pop();
                                           } catch (e) {
-                                            print("Error deleting order: $e");
+                                            print(
+                                                "Error deleting employee: $e");
                                           }
                                         },
                                         child: Text('Delete'),

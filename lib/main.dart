@@ -7,6 +7,7 @@ import 'package:ecommerce_app_firebase/views/admin/employee/employee_create.dart
 import 'package:ecommerce_app_firebase/views/admin/employee/employee_edit.dart';
 import 'package:ecommerce_app_firebase/views/admin/employee/employee_main.dart';
 import 'package:ecommerce_app_firebase/views/admin/order/order_create.dart';
+import 'package:ecommerce_app_firebase/views/admin/order/order_edit.dart';
 import 'package:ecommerce_app_firebase/views/admin/order/order_main.dart';
 import 'package:ecommerce_app_firebase/views/admin/product/product_create.dart';
 import 'package:ecommerce_app_firebase/views/admin/product/product_edit.dart';
@@ -19,12 +20,12 @@ import 'package:ecommerce_app_firebase/views/screens/checkout_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/detail_page.dart';
 import 'package:ecommerce_app_firebase/views/screens/home_page.dart';
 import 'package:ecommerce_app_firebase/views/screens/log_sign_page.dart';
+import 'package:ecommerce_app_firebase/views/screens/profile/profile_edit.dart';
 import 'package:ecommerce_app_firebase/views/screens/sign_in_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/sign_up_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -144,21 +145,36 @@ class _myAppState extends State<myApp> {
 
         //order
         'orderCreate': (context) => OrderCreate(),
-        // 'orderEdit': (context) {
-        //   // Nhận đối tượng arguments từ đường dẫn
-        //   final arguments = ModalRoute.of(context)?.settings.arguments
-        //       as Map<String, dynamic>;
+        'orderEdit': (context) {
+          // Nhận đối tượng arguments từ đường dẫn
+          final arguments = ModalRoute.of(context)?.settings.arguments
+              as Map<String, dynamic>;
 
-        //   // Lấy orderId từ đối tượng arguments
-        //   final orderId = arguments['orderId'] ?? '';
+          // Lấy orderId từ đối tượng arguments
+          final orderId = arguments['orderId'] ?? '';
 
-        //   // Truyền orderId và orderData cho trang orderEdit
-        //   return OrderEdit(
-        //     orderId: orderId,
-        //     orderData: arguments['orderData'] ?? {},
-        //   );
-        // },
+          // Truyền orderId và orderData cho trang orderEdit
+          return OrderEdit(
+            orderId: orderId,
+            orderData: arguments['orderData'] ?? {},
+          );
+        },
         'orderMain': (context) => OrderMain(),
+
+        'profileEdit': (context) {
+          // Nhận đối tượng arguments từ đường dẫn
+          final arguments = ModalRoute.of(context)?.settings.arguments
+              as Map<String, dynamic>;
+
+          // Lấy customerId từ đối tượng arguments
+          final customerId = arguments['customerId'] ?? '';
+
+          // Truyền customerId và customerData cho trang CustomerEdit
+          return ProfileEdit(
+            customerId: customerId,
+            customerData: arguments['customerData'] ?? {},
+          );
+        },
       },
     );
   }

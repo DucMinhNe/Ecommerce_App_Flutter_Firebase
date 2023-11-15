@@ -8,6 +8,16 @@ class OrderFsMethods {
         .set(orderInfoMap);
   }
 
+  Future<DocumentSnapshot> getAddressCustomerDocument(
+      String userUID, String addressCustomerId) async {
+    return await FirebaseFirestore.instance
+        .collection("Customer")
+        .doc(userUID)
+        .collection("AddressCustomer")
+        .doc(addressCustomerId)
+        .get();
+  }
+
   Future<QuerySnapshot> getAllOrders() {
     return FirebaseFirestore.instance.collection("Order").get().then(
       (value) {
