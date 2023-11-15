@@ -9,6 +9,7 @@ class OrderMain extends StatefulWidget {
 
 class _OrderMainState extends State<OrderMain> {
   OrderFsMethods orderFsMethods = OrderFsMethods();
+  var _customerData;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -29,11 +30,8 @@ class _OrderMainState extends State<OrderMain> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error fetching orders'));
           } else {
-            // Extract the list of orders from the snapshot
             List<QueryDocumentSnapshot> orders = snapshot.data!.docs;
 
-            // Build the ListView with cards
-            // ...
             return ListView.builder(
               itemCount: orders.length,
               itemBuilder: (context, index) {
@@ -44,6 +42,18 @@ class _OrderMainState extends State<OrderMain> {
                 // Get the document ID
                 String orderId = orders[index].id;
 
+                orderFsMethods
+                    .getCustomerByCustomerRef(orderData['customerRef'])
+                    .then((DocumentSnapshot documentSnapshot) {
+                  if (documentSnapshot.exists) {
+                    _customerData =
+                        documentSnapshot.data() as Map<String, dynamic>;
+
+                    print("First Name: ${_customerData['first_name']}");
+                  } else {}
+                }).catchError((error) {
+                  print("Error fetching data: $error");
+                });
                 // Create a Card for each order
                 return GestureDetector(
                   onTap: () {
@@ -64,7 +74,8 @@ class _OrderMainState extends State<OrderMain> {
                     child: ListTile(
                       contentPadding: EdgeInsets.all(8),
                       leading: Text(
-                        orderData['customerRef'] ?? '',
+                        _customerData['first_name'] ?? '',
+                        // '',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       title: Text(

@@ -8,6 +8,51 @@ class OrderFsMethods {
         .set(orderInfoMap);
   }
 
+  Future<DocumentSnapshot> getCustomerByCustomerRef(String customerRef) async {
+    try {
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection("Customer")
+          .doc(customerRef)
+          .get();
+
+      return documentSnapshot;
+    } catch (error) {
+      print("Error fetching orders by customerRef: $error");
+      throw error; // Throw the error for handling in the calling code
+    }
+  }
+
+  Future<DocumentSnapshot> getAddressCustomerByAddressCustomerRef(
+      String customerRef, String addressCustomerRef) async {
+    try {
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection("Customer")
+          .doc(customerRef)
+          .collection("AddressCustomer")
+          .doc(addressCustomerRef)
+          .get();
+
+      return documentSnapshot;
+    } catch (error) {
+      print("Error fetching orders by customerRef: $error");
+      throw error; // Throw the error for handling in the calling code
+    }
+  }
+
+  Future<DocumentSnapshot> getEmployeeByEmployeeRef(String employeeRef) async {
+    try {
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection("Employee")
+          .doc(employeeRef)
+          .get();
+
+      return documentSnapshot;
+    } catch (error) {
+      print("Error fetching orders by customerRef: $error");
+      throw error; // Throw the error for handling in the calling code
+    }
+  }
+
   Future<DocumentSnapshot> getAddressCustomerDocument(
       String userUID, String addressCustomerId) async {
     return await FirebaseFirestore.instance

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce_app_firebase/views/admin/order/order_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderEdit extends StatefulWidget {
   final String orderId;
@@ -15,7 +14,7 @@ class OrderEdit extends StatefulWidget {
 
 class _OrderEditState extends State<OrderEdit> {
   OrderFsMethods orderFsMethods = OrderFsMethods();
-  Map<String, dynamic> _addressCustomerData = {};
+  var _customerData;
   late TextEditingController _customerRefController;
   late TextEditingController _employeeRefController;
   late TextEditingController _orderDateTimeController;
@@ -25,25 +24,23 @@ class _OrderEditState extends State<OrderEdit> {
   late TextEditingController _paymentMethodNameController;
   late TextEditingController _statusController;
 
-  late TextEditingController _addressCustomerNameController;
-  late TextEditingController _addressCustomerPhoneNumberController;
-
   bool _isUpdating = false;
-  String _userUID = '';
-  Future<void> _loadUserUID() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _userUID = prefs.getString('userUID') ?? '';
-    });
-  }
 
   @override
   void initState() {
-    _loadUserUID();
-
     super.initState();
-
     // Set initial values for controllers
+    orderFsMethods
+        .getCustomerByCustomerRef(widget.orderData['customerRef'])
+        .then((DocumentSnapshot documentSnapshot) async {
+      if (documentSnapshot.exists) {
+        _customerData = documentSnapshot.data() as Map<String, dynamic>;
+        // _customerRefController =
+        //     TextEditingController(text: '${_customerData['first_name']}');
+      } else {}
+    }).catchError((error) {
+      print("Error fetching data: $error");
+    });
     _customerRefController =
         TextEditingController(text: widget.orderData['customerRef'] ?? '');
     _employeeRefController =

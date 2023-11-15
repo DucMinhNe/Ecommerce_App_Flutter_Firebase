@@ -19,7 +19,6 @@ class _ProfileEditState extends State<ProfileEdit> {
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
-  late TextEditingController _addressController;
   late TextEditingController _phoneNumberController;
   late TextEditingController _genderController;
   late TextEditingController _customerImageController;
