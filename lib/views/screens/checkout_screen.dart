@@ -117,6 +117,32 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
   }
 
+  // Future<void> _updateProductQuantity(
+  //     String productRef, int quantityToReduce) async {
+  //   try {
+  //     // Lấy thông tin sản phẩm từ Firestore
+  //     DocumentSnapshot productSnapshot = await FirebaseFirestore.instance
+  //         .collection('Product')
+  //         .doc(productRef)
+  //         .get();
+  //     if (productSnapshot.exists) {
+  //       // Giảm quantity trong sản phẩm
+  //       int currentProductQuantity = productSnapshot['stock_quantity'];
+  //       int updatedQuantity = currentProductQuantity - quantityToReduce;
+
+  //       await FirebaseFirestore.instance
+  //           .collection('Product')
+  //           .doc(productRef)
+  //           .update({
+  //         'stock_quantity': updatedQuantity,
+  //       });
+  //     }
+  //   } catch (e) {
+  //     // Xử lý lỗi nếu có
+  //     print('Error updating product quantity: $e');
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
@@ -329,7 +355,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(cartData['quantity'].toString()),
+                                    Text(
+                                      cartData['quantity'].toString(),
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),

@@ -20,6 +20,8 @@ import 'package:ecommerce_app_firebase/views/screens/checkout_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/detail_page.dart';
 import 'package:ecommerce_app_firebase/views/screens/home_page.dart';
 import 'package:ecommerce_app_firebase/views/screens/log_sign_page.dart';
+import 'package:ecommerce_app_firebase/views/screens/order_placed/order_placed_edit.dart';
+import 'package:ecommerce_app_firebase/views/screens/order_placed/order_placed_main.dart';
 import 'package:ecommerce_app_firebase/views/screens/profile/profile_edit.dart';
 import 'package:ecommerce_app_firebase/views/screens/sign_in_screen.dart';
 import 'package:ecommerce_app_firebase/views/screens/sign_up_screen.dart';
@@ -175,6 +177,22 @@ class _myAppState extends State<myApp> {
             customerData: arguments['customerData'] ?? {},
           );
         },
+
+        'orderPlacedEdit': (context) {
+          // Nhận đối tượng arguments từ đường dẫn
+          final arguments = ModalRoute.of(context)?.settings.arguments
+              as Map<String, dynamic>;
+
+          // Lấy orderId từ đối tượng arguments
+          final orderId = arguments['orderId'] ?? '';
+
+          // Truyền orderId và orderData cho trang orderEdit
+          return OrderPlacedEdit(
+            orderId: orderId,
+            orderData: arguments['orderData'] ?? {},
+          );
+        },
+        'orderPlacedMain': (context) => OrderPlacedMain(),
       },
     );
   }

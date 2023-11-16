@@ -1,6 +1,8 @@
+import 'package:ecommerce_app_firebase/views/admin/order/order_firestore.dart';
 import 'package:ecommerce_app_firebase/views/screens/order_placed/order_placed_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderPlacedMain extends StatefulWidget {
   @override
@@ -8,32 +10,44 @@ class OrderPlacedMain extends StatefulWidget {
 }
 
 class _OrderPlacedMainState extends State<OrderPlacedMain> {
-  OrderPlacedFsMethods orderPlacedFsMethods = OrderPlacedFsMethods();
+  OrderPlacedFsMethods orderFsMethods = OrderPlacedFsMethods();
+  String _userUID = '';
+
+  @override
+  void initState() {
+    _loadUserUID();
+    super.initState();
+  }
+
+  Future<void> _loadUserUID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userUID = prefs.getString('userUID') ?? '';
+    });
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    orderPlacedFsMethods.getAllOrderPlaceds();
+    orderFsMethods.getAllOrders(_userUID);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('OrderPlaced List'),
+        title: Text('Order List'),
       ),
       body: FutureBuilder<QuerySnapshot>(
-        future: orderPlacedFsMethods.getAllOrderPlaceds(),
+        future: orderFsMethods.getAllOrders(_userUID),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error fetching orders'));
           } else {
-            // Extract the list of orders from the snapshot
             List<QueryDocumentSnapshot> orders = snapshot.data!.docs;
 
-            // Build the ListView with cards
-            // ...
             return ListView.builder(
               itemCount: orders.length,
               itemBuilder: (context, index) {
@@ -48,7 +62,7 @@ class _OrderPlacedMainState extends State<OrderPlacedMain> {
                 return GestureDetector(
                   onTap: () {
                     Navigator.of(context).pushNamed(
-                      'orderEdit',
+                      'orderPlacedEdit',
                       arguments: {
                         'orderId': orderId,
                         'orderData': orderData,
@@ -63,10 +77,15 @@ class _OrderPlacedMainState extends State<OrderPlacedMain> {
                     ),
                     child: ListTile(
                       contentPadding: EdgeInsets.all(8),
-                      leading: Text(
-                        orderData['customerRef'] ?? '',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      leading: orderData['status'] == 'Đã Nhận Hàng'
+                          ? Text(
+                              '✅',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )
+                          : Text(
+                              '🔄',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                       title: Text(
                         orderData['order_date_time'] ?? '',
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -93,13 +112,6 @@ class _OrderPlacedMainState extends State<OrderPlacedMain> {
 //
           }
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {});
-          Navigator.of(context).pushNamed('orderCreate');
-        },
-        child: Icon(Icons.add),
       ),
     );
   }

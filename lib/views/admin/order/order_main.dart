@@ -42,18 +42,6 @@ class _OrderMainState extends State<OrderMain> {
                 // Get the document ID
                 String orderId = orders[index].id;
 
-                orderFsMethods
-                    .getCustomerByCustomerRef(orderData['customerRef'])
-                    .then((DocumentSnapshot documentSnapshot) {
-                  if (documentSnapshot.exists) {
-                    _customerData =
-                        documentSnapshot.data() as Map<String, dynamic>;
-
-                    print("First Name: ${_customerData['first_name']}");
-                  } else {}
-                }).catchError((error) {
-                  print("Error fetching data: $error");
-                });
                 // Create a Card for each order
                 return GestureDetector(
                   onTap: () {
@@ -73,11 +61,15 @@ class _OrderMainState extends State<OrderMain> {
                     ),
                     child: ListTile(
                       contentPadding: EdgeInsets.all(8),
-                      leading: Text(
-                        _customerData['first_name'] ?? '',
-                        // '',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      leading: orderData['status'] == 'Đã Nhận Hàng'
+                          ? Text(
+                              '✅',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )
+                          : Text(
+                              '🔄',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                       title: Text(
                         orderData['order_date_time'] ?? '',
                         style: TextStyle(fontWeight: FontWeight.bold),

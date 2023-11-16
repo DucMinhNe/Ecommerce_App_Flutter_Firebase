@@ -123,7 +123,7 @@ class _ProductCreateState extends State<ProductCreate> {
           "product_name": product_nameController.text,
           "description": descriptionController.text,
           "unit_price": unit_priceController.text,
-          "stock_quantity": stock_quantityController.text,
+          "stock_quantity": int.parse(stock_quantityController.text),
           "product_image": imageURL, // Sử dụng URL của hình đã tải lên Firebase
           "product_category_name": product_category_nameController.text,
           "provider_name": provider_nameController.text,

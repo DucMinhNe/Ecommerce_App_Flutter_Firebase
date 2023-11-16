@@ -381,20 +381,6 @@ class _HomePageState extends State<HomePage> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            Align(
-                                              alignment: Alignment.bottomCenter,
-                                              child: Text(
-                                                '℈',
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: (Get.isDarkMode)
-                                                      ? Colors.red.shade300
-                                                      : Colors.red.shade700,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 10),
                                             Text(
                                               data['unit_price'].toString(),
                                               style: TextStyle(
@@ -403,6 +389,20 @@ class _HomePageState extends State<HomePage> {
                                                 color: (Get.isDarkMode)
                                                     ? Colors.white
                                                     : Colors.grey.shade800,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Align(
+                                              alignment: Alignment.bottomCenter,
+                                              child: Text(
+                                                'vnđ',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: (Get.isDarkMode)
+                                                      ? Colors.red.shade300
+                                                      : Colors.red.shade700,
+                                                ),
                                               ),
                                             ),
                                             const SizedBox(width: 14),

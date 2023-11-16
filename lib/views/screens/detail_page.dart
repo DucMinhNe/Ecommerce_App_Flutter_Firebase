@@ -23,6 +23,19 @@ class _DetailPageState extends State<DetailPage> {
     super.initState();
   }
 
+  Future<Map<String, dynamic>> getCustomerData(String customerRef) async {
+    DocumentSnapshot customerSnapshot = await FirebaseFirestore.instance
+        .collection("Customer")
+        .doc(customerRef)
+        .get();
+
+    if (customerSnapshot.exists) {
+      return customerSnapshot.data() as Map<String, dynamic>;
+    } else {
+      return {}; // hoặc có thể trả về một giá trị mặc định khác tùy thuộc vào yêu cầu của bạn
+    }
+  }
+
   Future<void> _loadUserUID() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -90,67 +103,59 @@ class _DetailPageState extends State<DetailPage> {
                 child:
                     Image.network(widget.productData['product_image'] ?? '')),
             Divider(
-              thickness: 5,
+              thickness: 3,
               color: Color.fromARGB(255, 211, 214, 200),
             ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            Column(
               children: [
-                Column(
+                Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    widget.productData['product_name'] ?? '',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w400, fontSize: 24),
+                  ),
+                ),
+                Row(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(3),
+                      padding: const EdgeInsets.only(left: 10),
                       child: Text(
-                        widget.productData['product_name'] ?? '',
+                        widget.productData['unit_price'] ?? '',
                         style: const TextStyle(
-                            fontWeight: FontWeight.w400, fontSize: 26),
+                          fontWeight: FontWeight.w800,
+                          fontSize: 28,
+                        ),
                       ),
                     ),
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(3.0),
-                          child: Text(
-                            widget.productData['unit_price'] ?? '',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 28,
-                            ),
-                          ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 5),
+                      child: Text(
+                        'vnđ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          color: Colors.red,
                         ),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            'đ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 22,
-                              color: Colors.red,
-                            ),
-                          ),
+                      ),
+                    ),
+                    Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Text(
+                        '⭐️⭐️⭐️⭐️⭐️',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15.0),
-                          child: Row(
-                            children: const [
-                              Text(
-                                '⭐️⭐️⭐️⭐️⭐️',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
             Divider(
-              thickness: 5,
+              thickness: 3,
               color: Color.fromARGB(255, 211, 214, 200),
             ),
             Padding(
@@ -178,7 +183,7 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ),
             Divider(
-              thickness: 5,
+              thickness: 3,
               color: Color.fromARGB(255, 211, 214, 200),
             ),
             Padding(
@@ -219,7 +224,7 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ),
             Divider(
-              thickness: 5,
+              thickness: 3,
               color: Color.fromARGB(255, 211, 214, 200),
             ),
             Container(
@@ -228,7 +233,7 @@ class _DetailPageState extends State<DetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Bình luận',
+                    'Khách hàng đánh giá',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24.0,
@@ -239,7 +244,7 @@ class _DetailPageState extends State<DetailPage> {
                     stream: FirebaseFirestore.instance
                         .collection('Product')
                         .doc(widget.productId)
-                        .collection('Comments')
+                        .collection('Comment')
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
@@ -255,16 +260,66 @@ class _DetailPageState extends State<DetailPage> {
                           return Container(
                             child: Column(
                               children: [
-                                ListTile(
-                                  leading: Text(comment?['user']),
-                                  title: Text(comment?['user']),
-                                  subtitle: Text(comment?['text']),
-                                  trailing: Text(
-                                    '⭐️⭐️⭐️⭐️⭐️',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                    ),
-                                  ),
+                                FutureBuilder<Map<String, dynamic>>(
+                                  future:
+                                      getCustomerData(comment?['customerRef']),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return Center(
+                                          child: CircularProgressIndicator());
+                                    } else if (snapshot.hasError) {
+                                      return Text(
+                                          'Error fetching customer data');
+                                    } else {
+                                      Map<String, dynamic> customerData =
+                                          snapshot.data ?? {};
+
+                                      // Add a return statement or throw statement here
+                                      return ListTile(
+                                        leading: ClipOval(
+                                          child: Image.network(
+                                            customerData['customer_image'] ??
+                                                '',
+                                            width: 40,
+                                            height: 40,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        title: Text(customerData['first_name']),
+                                        subtitle: Column(
+                                          children: [
+                                            Text(comment?['text']),
+                                            Container(
+                                              alignment: Alignment.centerLeft,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 5),
+                                                child: Image.network(
+                                                  widget.productData[
+                                                          'product_image'] ??
+                                                      '',
+                                                  width: 55,
+                                                  height: 55,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        trailing: Text(
+                                          '⭐️⭐️⭐️⭐️⭐️',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ); // Replace with the widget you want to return
+                                    }
+                                  },
+                                ),
+                                Divider(
+                                  thickness: 3,
+                                  color: Color.fromARGB(255, 211, 214, 200),
                                 ),
                               ],
                             ),

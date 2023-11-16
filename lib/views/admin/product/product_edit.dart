@@ -23,7 +23,8 @@ class _ProductEditState extends State<ProductEdit> {
   late TextEditingController _productImageController;
   late TextEditingController _productCategoryNameController;
   late TextEditingController _providerNameController;
-
+  int _imgUpdate = 0;
+  String? _imageURL = "";
   @override
   void initState() {
     super.initState();
@@ -48,7 +49,7 @@ class _ProductEditState extends State<ProductEdit> {
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-
+    _imgUpdate = 1;
     if (image != null) {
       final String oldImage =
           _productImageController.text; // Store the path of the old image
@@ -144,7 +145,8 @@ class _ProductEditState extends State<ProductEdit> {
   }
 
   void _updateProduct() async {
-    String? imageURL = await _uploadImage(_productImageController.text);
+    if (_imgUpdate == 1)
+      _imageURL = await _uploadImage(_productImageController.text);
 
     // Get the updated data from controllers
     String updatedProductName = _productNameController.text.trim();
@@ -156,13 +158,12 @@ class _ProductEditState extends State<ProductEdit> {
         _productCategoryNameController.text.trim();
     String updatedProviderName = _providerNameController.text.trim();
 
-    // Create a map with updated data
     Map<String, dynamic> updatedData = {
       'product_name': updatedProductName,
       'description': updatedDescription,
       'unit_price': updatedUnitPrice,
-      'stock_quantity': updatedStockQuantity,
-      'product_image': imageURL,
+      "stock_quantity": int.parse(updatedStockQuantity),
+      if (_imgUpdate == 1) 'product_image': _imageURL,
       'product_category_name': updatedProductCategoryName,
       'provider_name': updatedProviderName,
       // Add other fields as needed

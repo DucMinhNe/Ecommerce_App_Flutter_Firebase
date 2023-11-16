@@ -57,7 +57,7 @@ class _drawerComponentState extends State<drawerComponent> {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return CircularProgressIndicator(); // or any other loading widget
+                            return CircularProgressIndicator();
                           }
                           if (snapshot.hasData && snapshot.data != null) {
                             var userData = snapshot.data?.data();
@@ -254,7 +254,7 @@ class _drawerComponentState extends State<drawerComponent> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // Navigator.of(context).pushNamed('CartScreen');
+                          Navigator.of(context).pushNamed('orderPlacedMain');
                         },
                         child: Container(
                           padding: EdgeInsets.all(15),

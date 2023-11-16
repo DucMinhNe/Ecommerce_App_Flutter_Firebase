@@ -1,20 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce_app_firebase/views/admin/order/order_firestore.dart';
+import 'package:ecommerce_app_firebase/views/screens/order_placed/order_placed_firestore.dart';
 import 'package:flutter/material.dart';
 
-class OrderEdit extends StatefulWidget {
+class OrderPlacedEdit extends StatefulWidget {
   final String orderId;
   final Map<String, dynamic> orderData;
 
-  OrderEdit({required this.orderId, required this.orderData});
+  OrderPlacedEdit({required this.orderId, required this.orderData});
 
   @override
-  _OrderEditState createState() => _OrderEditState();
+  _OrderPlacedEditState createState() => _OrderPlacedEditState();
 }
 
-class _OrderEditState extends State<OrderEdit> {
-  OrderFsMethods orderFsMethods = OrderFsMethods();
-  var _customerData;
+class _OrderPlacedEditState extends State<OrderPlacedEdit> {
+  OrderPlacedFsMethods orderFsMethods = OrderPlacedFsMethods();
   late TextEditingController _customerRefController;
   late TextEditingController _employeeRefController;
   late TextEditingController _orderDateTimeController;
@@ -64,8 +64,8 @@ class _OrderEditState extends State<OrderEdit> {
     //     TextEditingController(text: widget.orderData['employeeRef'] ?? '');
     _orderDateTimeController =
         TextEditingController(text: widget.orderData['order_date_time'] ?? '');
-    _addressCustomerRefController = TextEditingController(
-        text: widget.orderData['addressCustomerRef'] ?? '');
+    // _addressCustomerRefController = TextEditingController(
+    //     text: widget.orderData['addressCustomerRef'] ?? '');
     _shippingCostController = TextEditingController(
         text: widget.orderData['shipping_cost']?.toString() ?? '');
     _totalPriceController = TextEditingController(
@@ -80,7 +80,7 @@ class _OrderEditState extends State<OrderEdit> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chi Tiết Đơn Hàng Admin'),
+        title: Text('Chi Tiết Đặt Hàng'),
       ),
       body: _isUpdating ? _buildLoadingIndicator() : _buildForm(),
     );
@@ -95,35 +95,6 @@ class _OrderEditState extends State<OrderEdit> {
           children: [
             Text('Order ID: ${widget.orderId}'),
             SizedBox(height: 16),
-            FutureBuilder<Map<String, dynamic>>(
-              future: getCustomerData(widget.orderData['customerRef']),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Text('Error fetching customer data');
-                } else {
-                  Map<String, dynamic> customerData = snapshot.data ?? {};
-
-                  return Column(
-                    children: [
-                      _buildTextField(
-                          'First Name',
-                          TextEditingController(
-                              text: customerData['first_name'] ?? '')),
-                      _buildTextField(
-                          'Last Name',
-                          TextEditingController(
-                              text: customerData['last_name'] ?? '')),
-                      _buildTextField(
-                          'Email',
-                          TextEditingController(
-                              text: customerData['email'] ?? '')),
-                    ],
-                  );
-                }
-              },
-            ),
             FutureBuilder<Map<String, dynamic>>(
               future: getAddressCustomerData(
                   widget.orderData['addressCustomerRef']),
@@ -163,25 +134,9 @@ class _OrderEditState extends State<OrderEdit> {
             _buildTextField(
                 'Payment Method Name', _paymentMethodNameController),
             _buildTextField('Status', _statusController),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    _updateOrder("Đang Giao Hàng");
-                  },
-                  child: Text('Đang Giao Hàng'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    _updateOrder("Đã Giao Hàng");
-                  },
-                  child: Text('Đã Giao Hàng'),
-                ),
-              ],
-            ),
             Text('Sản Phẩm'),
             Container(
-              height: 200,
+              height: 230,
               child: Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -239,10 +194,34 @@ class _OrderEditState extends State<OrderEdit> {
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    subtitle: Text(
-                                      orderDetailData['unit_price'].toString(),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
+                                    subtitle: Column(
+                                      children: [
+                                        Text(
+                                          orderDetailData['unit_price']
+                                              .toString(),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        if (widget.orderData['status'] ==
+                                            "Đã Nhận Hàng")
+                                          Row(
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  _showReviewDialog(
+                                                      orderDetailData[
+                                                          'productRef']);
+                                                },
+                                                child:
+                                                    Text('Đánh Giá Sản Phẩm'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {},
+                                                child: Text('Mua lại'),
+                                              ),
+                                            ],
+                                          ),
+                                      ],
                                     ),
                                     trailing: Text(
                                       orderDetailData['quantity'].toString(),
@@ -273,10 +252,13 @@ class _OrderEditState extends State<OrderEdit> {
               ),
             ),
             _buildTextField('Total Price', _totalPriceController),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text('Save Changes'),
-            ),
+            if (widget.orderData['status'] == "Đã Giao Hàng")
+              ElevatedButton(
+                onPressed: () {
+                  _updateOrder("Đã Nhận Hàng");
+                },
+                child: Text('Đã Nhận Hàng ?'),
+              ),
           ],
         ),
       ),
@@ -299,6 +281,50 @@ class _OrderEditState extends State<OrderEdit> {
     );
   }
 
+  Future<void> _showReviewDialog(String productId) async {
+    String reviewText = "";
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Đánh Giá Sản Phẩm'),
+          content: TextField(
+            onChanged: (value) {
+              reviewText = value;
+            },
+            decoration: InputDecoration(
+              hintText: 'Nhập đánh giá của bạn',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Hủy'),
+            ),
+            TextButton(
+              onPressed: () async {
+                String customerRef = widget.orderData['customerRef'];
+                // Add the review to Firestore
+                await FirebaseFirestore.instance
+                    .collection('Product')
+                    .doc(productId)
+                    .collection('Comment')
+                    .add({
+                  'customerRef': customerRef,
+                  'text': reviewText,
+                });
+                Navigator.of(context).pop();
+              },
+              child: Text('Xác nhận'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildLoadingIndicator() {
     return Center(
       child: CircularProgressIndicator(),
@@ -310,6 +336,7 @@ class _OrderEditState extends State<OrderEdit> {
       _isUpdating = true;
     });
 
+    // Get the updated data from controllers
     // Create a map with updated data
     Map<String, dynamic> updatedData = {
       // 'status': "Đã Giao Hàng",
@@ -319,7 +346,7 @@ class _OrderEditState extends State<OrderEdit> {
     // Call the updateOrder function from your OrderFsMethods class
     try {
       await OrderFsMethods().updateOrder(widget.orderId, updatedData);
-      Navigator.of(context).pushReplacementNamed('orderMain');
+      Navigator.of(context).pushReplacementNamed('orderPlacedMain');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Order updated successfully'),
