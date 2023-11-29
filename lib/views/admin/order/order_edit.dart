@@ -14,7 +14,7 @@ class OrderEdit extends StatefulWidget {
 
 class _OrderEditState extends State<OrderEdit> {
   OrderFsMethods orderFsMethods = OrderFsMethods();
-  var _customerData;
+
   late TextEditingController _customerRefController;
   late TextEditingController _employeeRefController;
   late TextEditingController _orderDateTimeController;

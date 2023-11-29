@@ -1,7 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -11,7 +9,6 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -45,77 +42,6 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  Future<void> _signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount!.authentication;
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
-
-      UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-      if (userCredential.user != null) {
-        User user = userCredential.user!;
-
-        // Save User information to SharedPreferences or another data storage mechanism
-        saveUserInfo(
-          userUid: user.uid,
-          displayName: user.displayName ?? '',
-          email: user.email ?? '',
-          photoUrl: user.photoURL ?? '',
-        );
-
-        // Check if the user exists in the "Customer" collection
-        DocumentSnapshot customerSnapshot = await FirebaseFirestore.instance
-            .collection('Customer')
-            .doc(user.uid)
-            .get();
-
-        if (!customerSnapshot.exists) {
-          // If the user does not exist, create a new document in "Customer" collection
-          await FirebaseFirestore.instance
-              .collection('Customer')
-              .doc(user.uid)
-              .set({
-            'email': user.email,
-            'first_name': user.displayName?.split(' ')[0] ?? '',
-            'last_name': user.displayName?.split(' ')[1] ?? '',
-            // Add other fields as needed
-          });
-        }
-
-        Navigator.pushReplacementNamed(context, 'homePage');
-      }
-    } catch (e) {
-      print(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content:
-              Text('Đăng nhập bằng Google không thành công. Vui lòng thử lại.'),
-        ),
-      );
-    }
-  }
-
-  void saveUserInfo({
-    required String userUid,
-    required String displayName,
-    required String email,
-    required String photoUrl,
-  }) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('userUID', userUid);
-    prefs.setString('displayName', displayName);
-    prefs.setString('email', email);
-    prefs.setString('photoUrl', photoUrl);
-  }
-
-  // Hàm để lưu User UID vào SharedPreferences
   void saveUserUID(String userUid) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('userUID', userUid);
@@ -173,7 +99,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: Text('Đăng nhập'),
               ),
               ElevatedButton(
-                onPressed: _signInWithGoogle,
+                onPressed: () {},
                 child: Text('Đăng nhập bằng Google'),
               ),
             ],

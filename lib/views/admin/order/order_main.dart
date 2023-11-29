@@ -9,7 +9,6 @@ class OrderMain extends StatefulWidget {
 
 class _OrderMainState extends State<OrderMain> {
   OrderFsMethods orderFsMethods = OrderFsMethods();
-  var _customerData;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();

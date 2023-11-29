@@ -130,7 +130,6 @@ class _OrderPlacedEditState extends State<OrderPlacedEdit> {
             // _buildTextField('Employee UID', _employeeRefController),
             _buildTextField('Order Date Time', _orderDateTimeController),
             _buildTextField('Shipping Cost', _shippingCostController),
-
             _buildTextField(
                 'Payment Method Name', _paymentMethodNameController),
             _buildTextField('Status', _statusController),
